@@ -13,73 +13,73 @@ namespace BookstoreApplication.Repo
             _context = context;
         }
 
-        public List<Book> GetAll()
+        public async Task<List<Book>> GetAllAsync()
         {
             List<Book> books = new List<Book>();
-            books = _context.Books
+            books = await _context.Books
                 .Include(b => b.Author)
                 .Include(b => b.Publisher)
-                .ToList();
+                .ToListAsync();
             return books;
         }
-        public Book? GetById(int id)
+        public async Task<Book?> GetByIdAsync(int id)
         {
-            return _context.Books.Find(id);
+            return await _context.Books.FindAsync(id);
         }
-        public bool Exists(int id)
+        public async Task<bool> ExistsAsync(int id)
         {
-            return _context.Books.Any(b => b.Id == id);
+            return await _context.Books.AnyAsync(b => b.Id == id);
         }
-        public Book Add(Book book)
+        public async Task<Book> AddAsync(Book book)
         {
-            _context.Books.Add(book);
-            _context.SaveChanges();
+            await _context.Books.AddAsync(book);
+            await _context.SaveChangesAsync();
             return book;
         }
-        public Book Update(Book book)
+        public async Task<Book> UpdateAsync(Book book)
         {
             _context.Books.Update(book);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return book;
         }
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            Book book = _context.Books.Find(id);
+            Book book = await _context.Books.FindAsync(id);
             if (book == null)
             {
                 return false;
             }
 
             _context.Books.Remove(book);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return true;
         }
-        //Delete all books on bublisher delete
-        public bool DeleteAllForPublisher(int publisherId)
+        //DeleteAsync all books on bublisher delete
+        public async Task<bool> DeleteAllForPublisherAsync(int publisherId)
         {
-            List<Book> booksToRemove = _context.Books
+            List<Book> booksToRemove = await _context.Books
             .Where(b => b.PublisherId == publisherId)
-            .ToList();
+            .ToListAsync();
 
             if (!booksToRemove.Any())
                 return false;
 
             _context.Books.RemoveRange(booksToRemove);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return true;
         }
-        //Delete all books on author delete
-        public bool DeleteAllForAuthor(int authorId)
+        //DeleteAsync all books on author delete
+        public async Task<bool> DeleteAllForAuthorAsync(int authorId)
         {
-            List<Book> booksToRemove = _context.Books
+            List<Book> booksToRemove = await _context.Books
             .Where(b => b.AuthorId == authorId)
-            .ToList();
+            .ToListAsync();
 
             if (!booksToRemove.Any())
                 return false;
 
             _context.Books.RemoveRange(booksToRemove);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return true;
         }
     }

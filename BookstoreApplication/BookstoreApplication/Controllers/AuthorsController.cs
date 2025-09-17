@@ -25,16 +25,16 @@ namespace BookstoreApplication.Controllers
         }
         // GET: api/authors
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            return Ok(_authorsRepository.GetAll());
+            return Ok(await _authorsRepository.GetAllAsync());
         }
 
         // GET api/authors/5
         [HttpGet("{id}")]
-        public IActionResult GetOne(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
-            Author author = _authorsRepository.GetById(id);
+            Author author = await _authorsRepository.GetByIdAsync(id);
             if (author == null)
             {
                 return NotFound();
@@ -44,42 +44,38 @@ namespace BookstoreApplication.Controllers
 
         // POST api/authors
         [HttpPost]
-        public IActionResult Post(Author author)
+        public async Task<IActionResult> PostAsync(Author author)
         {
-            Author Added_author = _authorsRepository.Add(author);
-            return Ok(Added_author);
+            return Ok(await _authorsRepository.AddAsync(author));
         }
 
         // PUT api/authors/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, Author author)
+        public async Task<IActionResult> PutAsync(int id, Author author)
         {
             if (id != author.Id)
             {
                 return BadRequest();
             }
 
-            Author existingAuthor = _authorsRepository.GetById(id);
-            if (existingAuthor == null)
+            if (!await _authorsRepository.ExistsAsync(id))
             {
                 return NotFound();
             }
-            Author updatedAuthor = _authorsRepository.Update(existingAuthor);
-            return Ok(updatedAuthor);
+            return Ok(await _authorsRepository.UpdateAsync(author));
         }
 
         // DELETE api/authors/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            Author existingAuthor = _authorsRepository.GetById(id);
-            if (existingAuthor == null)
+            if (! await _authorsRepository.ExistsAsync(id))
             {
                 return NotFound();
             }
-            _authorsRepository.Delete(id);
+            await _authorsRepository.DeleteAsync(id);
             // kaskadno brisanje svih knjiga obrisanog autora
-            _booksRepository.DeleteAllForAuthor(id);
+            await _booksRepository.DeleteAllForAuthorAsync(id);
             return NoContent();
         }
         // TODO kaskadno brisanje svih vezanih knjiga AuthorsAwards

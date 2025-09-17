@@ -1,4 +1,5 @@
-﻿using BookstoreApplication.Data;
+﻿using System.Threading.Tasks;
+using BookstoreApplication.Data;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repo;
 using BookstoreApplication.Repository;
@@ -25,16 +26,16 @@ namespace BookstoreApplication.Controllers
 
         // GET: api/books
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            return Ok(_booksRepository.GetAll());
+            return Ok(await _booksRepository.GetAllAsync());
         }
 
         // GET api/books/5
         [HttpGet("{id}")]
-        public IActionResult GetOne(int id)
+        public async Task<IActionResult> GetOneAsync(int id)
         {
-            var book = _booksRepository.GetById(id);
+            var book = await _booksRepository.GetByIdAsync(id);
             if (book == null)
             {
                 return NotFound();
@@ -44,17 +45,17 @@ namespace BookstoreApplication.Controllers
 
         // POST api/books
         [HttpPost]
-        public IActionResult Post(Book book)
+        public async Task<IActionResult> PostAsync(Book book)
         {
             // kreiranje knjige je moguće ako je izabran postojeći autor
-            Author author =_authorsRepository.GetById(book.AuthorId);
+            Author author = await _authorsRepository.GetByIdAsync(book.AuthorId);
             if (author == null)
             {
                 return BadRequest();
             }
 
             // kreiranje knjige je moguće ako je izabran postojeći izdavač
-            Publisher publisher =_publishersRepository.GetById(book.PublisherId);
+            Publisher publisher =await _publishersRepository.GetByIdAsync(book.PublisherId);
             if (publisher == null)
             {
                 return BadRequest();
@@ -64,56 +65,52 @@ namespace BookstoreApplication.Controllers
             book.Author = author;
             book.PublisherId= publisher.Id;
             book.Publisher = publisher;
-            Book added_book = _booksRepository.Add(book);
+            Book added_book = await _booksRepository.AddAsync(book);
             return Ok(added_book);
         }
 
         // PUT api/books/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, Book book)
+        public async Task<IActionResult> PutAsync(int id, Book book)
         {
             if (id != book.Id)
             {
                 return BadRequest();
             }
 
-            if (!_booksRepository.Exists(id))
+            if (!await _booksRepository.ExistsAsync(id))
             {
                 return NotFound();
             }
 
             // izmena knjige je moguca ako je izabran postojeći autor
-            //TODO napraviti exist funkcije u repozitorijumima za autore i izdavače
-            Author author = _authorsRepository.GetById(book.AuthorId);
-            if (author == null)
+            if (!await _authorsRepository.ExistsAsync(book.AuthorId))
             {
                 return BadRequest();
             }
 
             // izmena knjige je moguca ako je izabran postojeći izdavač
-            //TODO napraviti exist funkcije u repozitorijumima za autore i izdavače
-            Publisher publisher = _publishersRepository.GetById(book.PublisherId);
-            if (publisher == null)
+            if (!await _publishersRepository.ExistsAsync(book.PublisherId))
             {
                 return BadRequest();
             }
             
-            book.Author = author;
-            book.Publisher = publisher;
-            Book updated_book = _booksRepository.Update(book);
+            book.Author = await _authorsRepository.GetByIdAsync(book.AuthorId);
+            book.Publisher = await _publishersRepository.GetByIdAsync(book.PublisherId);
+            Book updated_book = await _booksRepository.UpdateAsync(book);
             return Ok(updated_book);
         }
 
         // DELETE api/books/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            Book existingBook = _booksRepository.GetById(id);
+            Book existingBook = await _booksRepository.GetByIdAsync(id);
             if (existingBook == null)
             {
                 return NotFound();
             }
-            _booksRepository.Delete(id);
+            await _booksRepository.DeleteAsync(id);
           return NoContent();       
         }
     }

@@ -23,16 +23,16 @@ namespace BookstoreApplication.Controllers
         }
         // GET: api/publishers
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            return Ok(_publishersRepository.GetAll());
+            return Ok(await _publishersRepository.GetAllAsync());
         }
 
         // GET api/publishers/5
         [HttpGet("{id}")]
-        public IActionResult GetOne(int id)
+        public async Task<IActionResult> GetOneAsync(int id)
         {
-            Publisher publisher = _publishersRepository.GetById(id);
+            Publisher publisher = await _publishersRepository.GetByIdAsync(id);
             if (publisher == null)
             {
                 return NotFound();
@@ -42,42 +42,40 @@ namespace BookstoreApplication.Controllers
 
         // POST api/publishers
         [HttpPost]
-        public IActionResult Post(Publisher publisher)
+        public async Task<IActionResult> PostAsync(Publisher publisher)
         {
-            Publisher Added_publisher = _publishersRepository.Add(publisher);
-            return Ok(Added_publisher);
+            return Ok(await _publishersRepository.AddAsync(publisher));
         }
 
         // PUT api/publishers/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, Publisher publisher)
+        public async Task<IActionResult> PutAsync(int id, Publisher publisher)
         {
             if (id != publisher.Id)
             {
                 return BadRequest();
             }
 
-            Publisher existingPublisher = _publishersRepository.GetById(id);
+            Publisher existingPublisher = await _publishersRepository.GetByIdAsync(id);
             if (existingPublisher == null)
             {
                 return NotFound();
             }
-            Publisher updatedPublisher = _publishersRepository.Update(existingPublisher);
-            return Ok(updatedPublisher);
+            return Ok(await _publishersRepository.UpdateAsync(existingPublisher));
         }
 
         // DELETE api/publishers/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            Publisher existingPublisher = _publishersRepository.GetById(id);
+            Publisher existingPublisher = await _publishersRepository.GetByIdAsync(id);
             if (existingPublisher == null)
             {
                 return NotFound();
             }
-            _publishersRepository.Delete(id);
+            await _publishersRepository.DeleteAsync(id);
             // kaskadno brisanje svih knjiga obrisanog izdavača
-            _booksRepository.DeleteAllForPublisher(id);
+            await _booksRepository.DeleteAllForPublisherAsync(id);
             return NoContent();
         }
     }
