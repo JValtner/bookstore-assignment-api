@@ -1,5 +1,7 @@
 ﻿using BookstoreApplication.Data;
 using BookstoreApplication.Models;
+using BookstoreApplication.Repo;
+using BookstoreApplication.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,18 +12,29 @@ namespace BookstoreApplication.Controllers
     [ApiController]
     public class AuthorsController : ControllerBase
     {
+
+        private readonly BooksRepository _booksRepository;
+        private readonly PublishersRepository _publishersRepository;
+        private readonly AuthorsRepository _authorsRepository;
+
+
+        public AuthorsController(BooksRepository booksRepository, AuthorsRepository authorsRepository)
+        {
+            _authorsRepository = authorsRepository;
+            _booksRepository = booksRepository;
+        }
         // GET: api/authors
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(DataStore.Authors);
+            return Ok(_authorsRepository.GetAll());
         }
 
         // GET api/authors/5
         [HttpGet("{id}")]
         public IActionResult GetOne(int id)
         {
-            var author = DataStore.Authors.FirstOrDefault(a => a.Id == id);
+            Author author = _authorsRepository.GetById(id);
             if (author == null)
             {
                 return NotFound();
@@ -33,9 +46,8 @@ namespace BookstoreApplication.Controllers
         [HttpPost]
         public IActionResult Post(Author author)
         {
-            author.Id = DataStore.GetNewAuthorId();
-            DataStore.Authors.Add(author);
-            return Ok(author);
+            Author Added_author = _authorsRepository.Add(author);
+            return Ok(Added_author);
         }
 
         // PUT api/authors/5
@@ -47,38 +59,29 @@ namespace BookstoreApplication.Controllers
                 return BadRequest();
             }
 
-            var existingAuthor = DataStore.Authors.FirstOrDefault(a => a.Id == id);
+            Author existingAuthor = _authorsRepository.GetById(id);
             if (existingAuthor == null)
             {
                 return NotFound();
             }
-
-            int index = DataStore.Authors.IndexOf(existingAuthor);
-            if (index == -1)
-            {
-                return NotFound();
-                
-            }
-
-            DataStore.Authors[index] = author;
-            return Ok(author);
+            Author updatedAuthor = _authorsRepository.Update(existingAuthor);
+            return Ok(updatedAuthor);
         }
 
         // DELETE api/authors/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var author = DataStore.Authors.FirstOrDefault(a => a.Id == id);
-            if (author == null)
+            Author existingAuthor = _authorsRepository.GetById(id);
+            if (existingAuthor == null)
             {
                 return NotFound();
             }
-            DataStore.Authors.Remove(author);
-
+            _authorsRepository.Delete(id);
             // kaskadno brisanje svih knjiga obrisanog autora
-            DataStore.Books.RemoveAll(b => b.AuthorId == id);
-
+            _booksRepository.DeleteAllForAuthor(id);
             return NoContent();
         }
+        // TODO kaskadno brisanje svih vezanih knjiga AuthorsAwards
     }
 }

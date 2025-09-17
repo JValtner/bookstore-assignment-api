@@ -83,11 +83,11 @@ namespace BookstoreApplication.Data
                 AuthorId = Authors[4].Id, Author = Authors[4], PublisherId = Publishers[0].Id, Publisher = Publishers[0]
             }
         };
-
         public static int GetNewAuthorId()
         {
             return Authors.Count() > 0 ? Authors.Max(x => x.Id) + 1 : 1;
         }
+
 
         public static int GetNewPublisherId()
         {

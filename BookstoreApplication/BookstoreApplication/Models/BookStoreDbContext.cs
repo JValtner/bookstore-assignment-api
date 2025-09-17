@@ -15,6 +15,26 @@ namespace BookstoreApplication.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         { 
+            //V4
+            modelBuilder.Entity<Book>()
+            .Property(e => e.PublishedDate)
+            .HasConversion(
+            v => v.ToUniversalTime(),
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+            modelBuilder.Entity<Author>()
+            .Property(e => e.DateOfBirth)
+            .HasConversion(
+            v => v.ToUniversalTime(),
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            
+            modelBuilder.Entity<AuthorAward>()
+            .Property(e => e.AwardedDate)
+            .HasConversion(
+            v => v.ToUniversalTime(),
+            v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+
             //V1
             modelBuilder.Entity<AuthorAward>()
                 .HasOne(a => a.Author)
@@ -101,7 +121,7 @@ namespace BookstoreApplication.Models
                 new AuthorAward { Id = 14, AuthorId = 2, AwardId = 4, AwardedDate = DateTime.SpecifyKind(new DateTime(1975, 1, 1), DateTimeKind.Utc) },
                 new AuthorAward { Id = 15, AuthorId = 1, AwardId = 4, AwardedDate = DateTime.SpecifyKind(new DateTime(1978, 1, 1), DateTimeKind.Utc) }
             );
-
+            
         }
     }
 }
