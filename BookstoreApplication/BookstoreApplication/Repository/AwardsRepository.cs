@@ -3,7 +3,7 @@ using BookstoreApplication.Models;
 
 namespace BookstoreApplication.Repository
 {
-    public class AwardRepository
+    public class AwardRepository : IAwardRepository
     {
         private readonly BookStoreDbContext _context;
 
@@ -17,9 +17,9 @@ namespace BookstoreApplication.Repository
             return _context.Awards.ToList();
         }
 
-        public Publisher? GetById(int id)
+        public Award? GetById(int id)
         {
-            return _context.Publishers.Find(id);
+            return _context.Awards.Find(id);
         }
         public Award Add(Award award)
         {

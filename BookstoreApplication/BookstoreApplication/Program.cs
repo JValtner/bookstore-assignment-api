@@ -1,7 +1,8 @@
 ﻿using System;
 using BookstoreApplication.Models;
-using BookstoreApplication.Repo;
 using BookstoreApplication.Repository;
+using BookstoreApplication.Repository;
+using BookstoreApplication.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,9 +27,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<BookStoreDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<AuthorsRepository>();
-builder.Services.AddScoped<PublishersRepository>();
-builder.Services.AddScoped<BooksRepository>();
+builder.Services.AddScoped<IAuthorsRepository, AuthorsRepository>();
+builder.Services.AddScoped<IPublishersRepository, PublishersRepository>();
+builder.Services.AddScoped<IBooksRepository, BooksRepository>();
+builder.Services.AddScoped<IAuthorsService, AuthorsService>();
+builder.Services.AddScoped<IBooksService, BooksService>();
+builder.Services.AddScoped<IPublishersService, PublishersService>();
 
 var app = builder.Build();
 

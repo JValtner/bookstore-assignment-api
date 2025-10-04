@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookstoreApplication.Repository
 {
-    public class AuthorsRepository
+    public class AuthorsRepository : IAuthorsRepository
     {
         private BookStoreDbContext _context;
 

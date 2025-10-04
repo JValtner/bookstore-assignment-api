@@ -1,9 +1,9 @@
 ﻿using BookstoreApplication.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BookstoreApplication.Repo
+namespace BookstoreApplication.Repository
 {
-    public class PublishersRepository
+    public class PublishersRepository : IPublishersRepository
     {
         private BookStoreDbContext _context;
 
