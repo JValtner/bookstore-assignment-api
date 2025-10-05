@@ -52,7 +52,7 @@ namespace BookstoreApplication.Controllers
         public async Task<IActionResult> DeleteAsync(int id)
         {
             await _authorsService.DeleteAsync(id);
-            return NotFound();
+            return NoContent();
         }
         
     }
