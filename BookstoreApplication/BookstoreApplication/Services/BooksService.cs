@@ -1,10 +1,8 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
 using BookstoreApplication.DTO;
+using BookstoreApplication.Exceptions;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repository;
-using BookstoreApplication.Repository;
-using static System.Reflection.Metadata.BlobBuilder;
 namespace BookstoreApplication.Services
 {
     public class BooksService : IBooksService
@@ -30,9 +28,9 @@ namespace BookstoreApplication.Services
         public async Task<BookDetailsDTO?> GetByIdAsync(int id)
         {
             Book book =  await _booksRepository.GetByIdAsync(id);
-            if (book == null)
+            if (book == null) 
             {
-                return null;
+                throw new NotFoundException(id); 
             }
             var dto = _mapper.Map<BookDetailsDTO>(book); 
             return dto;
@@ -41,20 +39,20 @@ namespace BookstoreApplication.Services
         public async Task<Book?> AddAsync(Book? book)
         {
             if (book == null)
-                return null;
+                throw new BadRequestException(book.Id);
 
             // kreiranje knjige je moguće ako je izabran postojeći autor
             Author author = await _authorsService.GetByIdAsync(book.AuthorId);
             if (author == null)
             {
-                return null;
+                throw new NotFoundException(book.AuthorId);
             }
 
             // kreiranje knjige je moguće ako je izabran postojeći izdavač
             Publisher publisher = await _publishersService.GetByIdAsync(book.PublisherId);
             if (publisher == null)
             {
-                return null;
+                throw new NotFoundException(book.PublisherId);
             }
 
             book.AuthorId = author.Id;
@@ -67,24 +65,24 @@ namespace BookstoreApplication.Services
         {
             if (id != book.Id)
             {
-                return null;
+                throw new BadRequestException(id);
             }
 
             if (!await ExistsAsync(id))
             {
-                return null;
+                throw new NotFoundException(id);
             }
 
             // izmena knjige je moguca ako je izabran postojeći autor
             if (!await _authorsService.ExistsAsync(book.AuthorId))
             {
-                return null;
+                throw new NotFoundException(book.AuthorId);
             }
 
             // izmena knjige je moguca ako je izabran postojeći izdavač
             if (!await _publishersService.ExistsAsync(book.PublisherId))
             {
-                return null;
+                throw new NotFoundException(book.PublisherId);
             }
 
             book.Author = await _authorsService.GetByIdAsync(book.AuthorId);
@@ -97,16 +95,24 @@ namespace BookstoreApplication.Services
             Book existingBook = await _booksRepository.GetByIdAsync(id);
             if (existingBook == null)
             {
-                return false;
+                throw new NotFoundException(id); ;
             }
             return await _booksRepository.DeleteAsync(id);
         }
         public async Task<bool> DeleteAllForPublisherAsync(int publisherId)
         {
+            if (!await _publishersService.ExistsAsync(publisherId))
+            {
+                throw new NotFoundException(publisherId);
+            }
             return await _booksRepository.DeleteAllForPublisherAsync(publisherId);
         }
         public async Task<bool> DeleteAllForAuthorsAsync(int authorId)
         {
+            if (!await _authorsService.ExistsAsync(authorId))
+            {
+                throw new NotFoundException(authorId);
+            }
             return await _booksRepository.DeleteAllForAuthorAsync(authorId);
         }
         public async Task<bool> ExistsAsync(int id)

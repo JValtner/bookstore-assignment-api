@@ -1,7 +1,6 @@
 ﻿using System;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repository;
-using BookstoreApplication.Repository;
 using BookstoreApplication.Services;
 using BookstoreApplication.Settings;
 using Microsoft.EntityFrameworkCore;
@@ -48,7 +47,13 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
+//Exception handling middleware
+builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+
 var app = builder.Build();
+
+//Exception handling middleware use
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

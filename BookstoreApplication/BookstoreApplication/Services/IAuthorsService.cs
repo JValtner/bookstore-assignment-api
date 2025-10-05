@@ -9,6 +9,6 @@ namespace BookstoreApplication.Services
         Task<bool> ExistsAsync(int id);
         Task<List<Author>> GetAllAsync();
         Task<Author?> GetByIdAsync(int id);
-        Task<Author> UpdateAsync(Author author);
+        Task<Author> UpdateAsync(int id, Author author);
     }
 }

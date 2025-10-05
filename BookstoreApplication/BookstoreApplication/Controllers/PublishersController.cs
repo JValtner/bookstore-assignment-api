@@ -30,12 +30,7 @@ namespace BookstoreApplication.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOneAsync(int id)
         {
-            Publisher publisher = await _publishersService.GetByIdAsync(id);
-            if (publisher == null)
-            {
-                return NotFound();
-            }
-            return Ok(publisher);
+            return Ok(await _publishersService.GetByIdAsync(id));
         }
 
         // POST api/publishers
@@ -49,27 +44,15 @@ namespace BookstoreApplication.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAsync(int id, Publisher publisher)
         {
-            if (id != publisher.Id)
-            {
-                return BadRequest();
-            }
-
-            Publisher existingPublisher = await _publishersService.GetByIdAsync(id);
-            if (existingPublisher == null)
-            {
-                return NotFound();
-            }
-            return Ok(await _publishersService.UpdateAsync(existingPublisher));
+            return Ok(await _publishersService.UpdateAsync(id, publisher));
         }
 
         // DELETE api/publishers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            if (await _publishersService.DeleteAsync(id))
-                return NoContent();
-
-            return NotFound();
+            await _publishersService.DeleteAsync(id);
+            return NoContent();
         }
     }
 }

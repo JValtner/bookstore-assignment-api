@@ -27,47 +27,28 @@ namespace BookstoreApplication.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOneAsync(int id)
         {
-            var book = await _booksService.GetByIdAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
-            return Ok(book);
+            return Ok(await _booksService.GetByIdAsync(id));
         }
 
         // POST api/books
         [HttpPost]
         public async Task<IActionResult> PostAsync(Book book)
         {
-
-            Book added_book = await _booksService.AddAsync(book);
-            if (added_book == null)
-            {
-                return BadRequest(); //NotFound();  
-            }
-            return Ok(added_book);
+            return Ok(await _booksService.AddAsync(book));
         }
 
         // PUT api/books/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAsync(int id, Book book)
         {
-            
-            Book updated_book = await _booksService.UpdateAsync(id, book);
-            if (updated_book == null)
-            {
-                return BadRequest(); //NotFound();  
-            }
-            return Ok(updated_book);
+            return Ok(await _booksService.UpdateAsync(id, book));
         }
 
         // DELETE api/books/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            if (await _booksService.DeleteAsync(id))
-                return NoContent();
-            
+            await _booksService.DeleteAsync(id);
             return NotFound();
    
         }

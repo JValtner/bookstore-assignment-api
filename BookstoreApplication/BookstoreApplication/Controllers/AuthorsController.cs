@@ -15,7 +15,6 @@ namespace BookstoreApplication.Controllers
     {
         private readonly IAuthorsService _authorsService;
 
-
         public AuthorsController(IAuthorsService authorsService)
         {
             _authorsService = authorsService;
@@ -31,12 +30,7 @@ namespace BookstoreApplication.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            Author author = await _authorsService.GetByIdAsync(id);
-            if (author == null)
-            {
-                return NotFound();
-            }
-            return Ok(author);
+            return Ok(await _authorsService.GetByIdAsync(id));
         }
 
         // POST api/authors
@@ -50,25 +44,14 @@ namespace BookstoreApplication.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAsync(int id, Author author)
         {
-            if (id != author.Id)
-            {
-                return BadRequest();
-            }
-
-            if (!await _authorsService.ExistsAsync(id))
-            {
-                return NotFound();
-            }
-            return Ok(await _authorsService.UpdateAsync(author));
+            return Ok(await _authorsService.UpdateAsync(id, author));
         }
 
         // DELETE api/authors/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            if(await _authorsService.DeleteAsync(id)) 
-                return NoContent();
-
+            await _authorsService.DeleteAsync(id);
             return NotFound();
         }
         
