@@ -1,7 +1,10 @@
 ﻿using System;
+using AutoMapper;
+using BookstoreApplication.DTO;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repository;
 using BookstoreApplication.Repository;
+using static System.Reflection.Metadata.BlobBuilder;
 namespace BookstoreApplication.Services
 {
     public class BooksService : IBooksService
@@ -9,20 +12,31 @@ namespace BookstoreApplication.Services
         private readonly IBooksRepository _booksRepository;
         private readonly IAuthorsService _authorsService;
         private readonly IPublishersService _publishersService;
+        private readonly AutoMapper.IMapper _mapper;
 
-        public BooksService(IBooksRepository booksRepository, IAuthorsService authorsService, IPublishersService publishersService)
+        public BooksService(IBooksRepository booksRepository, IAuthorsService authorsService, IPublishersService publishersService, IMapper mapper)
         {
             _booksRepository = booksRepository;
             _authorsService = authorsService;
             _publishersService = publishersService;
+            _mapper = mapper;
         }
-        public async Task<List<Book>> GetAllAsync()
+        public async Task<List<BookDTO>> GetAllAsync()
         {
-            return await _booksRepository.GetAllAsync();
+            var books = await _booksRepository.GetAllAsync();
+            var dtos = books.Select(_mapper.Map<BookDTO>).ToList();
+            return dtos;
         }
-        public async Task<Book?> GetByIdAsync(int id)
+        public async Task<BookDetailsDTO?> GetByIdAsync(int id)
         {
-            return await _booksRepository.GetByIdAsync(id);
+            Book book =  await _booksRepository.GetByIdAsync(id);
+            if (book == null)
+            {
+                return null;
+            }
+            var dto = _mapper.Map<BookDetailsDTO>(book); 
+            return dto;
+
         }
         public async Task<Book?> AddAsync(Book? book)
         {
@@ -80,7 +94,7 @@ namespace BookstoreApplication.Services
         }
         public async Task<bool> DeleteAsync(int id)
         {
-            Book existingBook = await GetByIdAsync(id);
+            Book existingBook = await _booksRepository.GetByIdAsync(id);
             if (existingBook == null)
             {
                 return false;
