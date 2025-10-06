@@ -21,6 +21,7 @@ namespace BookstoreApplication.Settings
                 .ForMember(dest => dest.PublisherName,
                     opt => opt.MapFrom(src => src.Publisher != null ? src.Publisher.Name : string.Empty))
                 .ReverseMap();
+            CreateMap<Author, AuthorDTO>().ReverseMap();
         }
 
     }

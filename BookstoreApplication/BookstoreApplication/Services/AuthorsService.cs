@@ -1,7 +1,10 @@
-﻿using BookstoreApplication.Models;
-using BookstoreApplication.Repository;
+﻿using BookstoreApplication.DTO;
 using BookstoreApplication.Exceptions;
+using BookstoreApplication.Models;
+using BookstoreApplication.Repository;
+using BookstoreApplication.Utils;
 using Microsoft.Extensions.Logging;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace BookstoreApplication.Services
 {
@@ -10,15 +13,18 @@ namespace BookstoreApplication.Services
         private readonly IAuthorsRepository _authorsRepository;
         private readonly IBooksRepository _booksRepository;
         private readonly ILogger<AuthorsService> _logger;
+        private readonly AutoMapper.IMapper _mapper;
 
         //Cirkularne zavisnosti - ne možemo AuthorsService da koristimo BooksService koji opet koristi AuthorsService
         //private readonly IBooksService _booksService;
 
-        public AuthorsService(IAuthorsRepository authorsRepository, IBooksRepository booksRepository, ILogger<AuthorsService> logger)
+        public AuthorsService(IAuthorsRepository authorsRepository, IBooksRepository booksRepository, ILogger<AuthorsService> logger, AutoMapper.IMapper mapper)
         {
             _authorsRepository = authorsRepository;
             _booksRepository = booksRepository;
             _logger = logger;
+            _mapper = mapper;
+
             //_booksService = booksService;
         }
 
@@ -27,7 +33,16 @@ namespace BookstoreApplication.Services
             _logger.LogInformation("Fetching all authors from repository.");
             var authors = await _authorsRepository.GetAllAsync();
             _logger.LogInformation("Fetched {Count} authors.", authors.Count);
+
             return authors;
+        }
+        public async Task<PaginatedList<AuthorDTO>> GetAllPagedAsync(int page, int pageSize)
+        {
+            var authors = await _authorsRepository.GetAllPagedAsync(page, pageSize);
+            var dtos = authors.Items
+              .Select(_mapper.Map<AuthorDTO>).ToList(); // važno! prepakuju se objekti klase Author u AuthorDTO, pošto je tako rečeno u zadatku
+
+            return new PaginatedList<AuthorDTO>(dtos, authors.Count, authors.PageIndex, pageSize); // kada su objekti klase Author prepakovani u AuthorDTO, potrebno je kreirati novi objekat klase PaginatedList koji sada sadrži DTO a ne domenske objekte
         }
 
         public async Task<Author?> GetByIdAsync(int id)
