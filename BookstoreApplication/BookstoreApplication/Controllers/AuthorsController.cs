@@ -29,15 +29,6 @@ namespace BookstoreApplication.Controllers
         [HttpGet("paging")]
         public async Task<IActionResult> GetAuthorsPage([FromQuery] int page = 1, int pageSize = 5)
         {
-            if (page < 1)
-            {
-                return BadRequest("Page value is invalid.");
-            }
-            if (pageSize < 1)
-            {
-                return BadRequest("Page size is invalid");
-            }
-
             return Ok(await _authorsService.GetAllPagedAsync(page, pageSize));
         }
         // GET api/authors/5
