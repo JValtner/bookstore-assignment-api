@@ -38,6 +38,12 @@ namespace BookstoreApplication.Services
         }
         public async Task<PaginatedList<AuthorDTO>> GetAllPagedAsync(int page, int pageSize)
         {
+            if (page < 1 || pageSize < 1)
+            {
+                _logger.LogWarning("Page: ", page, " or page size: ", pageSize, " problem");
+                throw new BadRequestException(page);
+            }
+
             var authors = await _authorsRepository.GetAllPagedAsync(page, pageSize);
             var dtos = authors.Items
               .Select(_mapper.Map<AuthorDTO>).ToList(); // važno! prepakuju se objekti klase Author u AuthorDTO, pošto je tako rečeno u zadatku
