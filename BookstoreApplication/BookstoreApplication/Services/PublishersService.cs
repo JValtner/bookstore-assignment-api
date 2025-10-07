@@ -1,6 +1,7 @@
 ﻿using BookstoreApplication.Exceptions;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repository;
+using BookstoreApplication.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace BookstoreApplication.Services
@@ -109,5 +110,16 @@ namespace BookstoreApplication.Services
             _logger.LogDebug("Checked existence for publisher ID {Id}: {Exists}", id, exists);
             return exists;
         }
+
+        public Task<IEnumerable<Publisher>> GetAllSorted(int sortType) // dobavlja izdavače sortirane po tipu
+        {
+            return _publishersRepository.GetAllSorted(sortType);
+        }
+
+        public async Task<List<SortTypeOption>> GetSortTypes()  //dobavlja vrste sortiranja
+        {
+            return await _publishersRepository.GetSortTypes();
+        }
+
     }
 }

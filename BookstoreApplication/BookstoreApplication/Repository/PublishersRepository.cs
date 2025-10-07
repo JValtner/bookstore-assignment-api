@@ -1,4 +1,5 @@
 ﻿using BookstoreApplication.Models;
+using BookstoreApplication.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookstoreApplication.Repository
@@ -46,5 +47,36 @@ namespace BookstoreApplication.Repository
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<IEnumerable<Publisher>> GetAllSorted(int sortType) // dobavlja izdavače sortirane po tipu
+        {
+            IQueryable<Publisher> publishers = _context.Publishers;
+
+            publishers = SortPublishers(publishers, sortType); // kod koji sortira izdavače je izdvojen u metodu ispod
+            return await publishers.ToListAsync();
+        }
+
+        private static IQueryable<Publisher> SortPublishers(IQueryable<Publisher> publishers, int sortType)
+        {
+            return sortType switch
+            {
+                (int)PublisherSortType.NAME_ASCENDING => publishers.OrderBy(p => p.Name),
+                (int)PublisherSortType.NAME_DESCENDING => publishers.OrderByDescending(p => p.Name),
+                (int)PublisherSortType.ADDRESS_ASCENDING => publishers.OrderBy(p => p.Address),
+                (int)PublisherSortType.ADDRESS_DESCENDING => publishers.OrderByDescending(p => p.Address),
+                _ => publishers.OrderBy(p => p.Name),    // podrazumevano sortiranje je po nazivu rastuće
+            };
+        }
+
+        public async Task<List<SortTypeOption>> GetSortTypes()  // dobavlja vrste sortiranja
+        {
+            List<SortTypeOption> options = new List<SortTypeOption>();
+            var enumValues = Enum.GetValues(typeof(PublisherSortType));  // preuzimanje niza vrednosti za enumeraciju
+            foreach (PublisherSortType sortType in enumValues)           // svaku vrednost za enumeraciju konvertuje u SortTypeOption
+            {
+                options.Add(new SortTypeOption(sortType));
+            }
+            return options;
+        }
+
     }
 }

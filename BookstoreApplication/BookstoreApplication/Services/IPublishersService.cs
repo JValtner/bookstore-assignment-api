@@ -1,4 +1,5 @@
 ﻿using BookstoreApplication.Models;
+using BookstoreApplication.Utils;
 
 namespace BookstoreApplication.Services
 {
@@ -10,5 +11,8 @@ namespace BookstoreApplication.Services
         Task<List<Publisher>> GetAllAsync();
         Task<Publisher?> GetByIdAsync(int id);
         Task<Publisher> UpdateAsync(int id, Publisher publisher);
+        Task<IEnumerable<Publisher>> GetAllSorted(int sortType); // dobavlja izdavače sortirane po tipu
+        Task<List<SortTypeOption>> GetSortTypes(); //dobavlja vrste sortiranja
+
     }
 }

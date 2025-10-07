@@ -1,4 +1,5 @@
 ﻿using BookstoreApplication.Models;
+using BookstoreApplication.Utils;
 
 namespace BookstoreApplication.Repository
 {
@@ -10,5 +11,8 @@ namespace BookstoreApplication.Repository
         Task<List<Publisher>> GetAllAsync();
         Task<Publisher?> GetByIdAsync(int id);
         Task<Publisher> UpdateAsync(Publisher publisher);
+        Task<IEnumerable<Publisher>> GetAllSorted(int sortType);
+        Task<List<SortTypeOption>> GetSortTypes();
+
     }
 }
