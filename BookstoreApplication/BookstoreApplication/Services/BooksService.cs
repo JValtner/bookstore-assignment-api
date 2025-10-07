@@ -3,7 +3,9 @@ using BookstoreApplication.DTO;
 using BookstoreApplication.Exceptions;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repository;
+using BookstoreApplication.Utils;
 using Microsoft.Extensions.Logging;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace BookstoreApplication.Services
 {
@@ -179,6 +181,18 @@ namespace BookstoreApplication.Services
             bool exists = await _booksRepository.ExistsAsync(id);
             _logger.LogDebug("Checked existence for book ID {Id}: {Exists}", id, exists);
             return exists;
+        }
+        public async Task<IEnumerable<BookDTO>> GetAllSortedAsync(int sortType)
+        {
+            IEnumerable<Book> books = await _booksRepository.GetAllSortedAsync(sortType);
+            var dtos = books.Select(_mapper.Map<BookDTO>).ToList();
+            return dtos;
+        }
+
+
+        public async Task<List<SortTypeOption>> GetSortTypesAsync()  //dobavlja vrste sortiranja
+        {
+            return await _booksRepository.GetSortTypesAsync();
         }
     }
 }

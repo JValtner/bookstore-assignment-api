@@ -1,5 +1,6 @@
 ﻿using System;
 using BookstoreApplication.Models;
+using BookstoreApplication.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookstoreApplication.Repository
@@ -81,6 +82,38 @@ namespace BookstoreApplication.Repository
             _context.Books.RemoveRange(booksToRemove);
             await _context.SaveChangesAsync();
             return true;
+        }
+        public async Task<IEnumerable<Book>> GetAllSortedAsync(int sortType) // dobavlja izdavače sortirane po tipu
+        {
+            IQueryable<Book> books = _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.Publisher);
+            books = SortBooks(books, sortType); // kod koji sortira izdavače je izdvojen u metodu ispod
+            return await books.ToListAsync();
+        }
+        private static IQueryable<Book> SortBooks(IQueryable<Book> books, int sortType)
+        {
+            return sortType switch
+            {
+                (int)BookSortType.BOOK_NAME_ASCENDING => books.OrderBy(b => b.Title),
+                (int)BookSortType.BOOK_NAME_DESCENDING => books.OrderByDescending(b => b.Title),
+                (int)BookSortType.PUBLISH_DATE_ASCENDING => books.OrderBy(b => b.PublishedDate),
+                (int)BookSortType.PUBLISH_DATE_DESCENDING => books.OrderByDescending(b => b.PublishedDate),
+                (int)BookSortType.AUTHOR_NAME_ASCENDING => books.OrderBy(b => b.Author.FullName),
+                (int)BookSortType.AUTHOR_NAME_DESCENDING => books.OrderByDescending(b => b.Author.FullName),
+                _ => books.OrderBy(b => b.Title),    // podrazumevano sortiranje je po nazivu rastuće
+            };
+        }
+
+        public async Task<List<SortTypeOption>> GetSortTypesAsync() 
+        {
+            List<SortTypeOption> options = new List<SortTypeOption>();
+            var enumValues = Enum.GetValues(typeof(BookSortType));  // preuzimanje niza vrednosti za enumeraciju
+            foreach (BookSortType sortType in enumValues)           // svaku vrednost za enumeraciju konvertuje u SortTypeOption
+            {
+                options.Add(new SortTypeOption(sortType));
+            }
+            return options;
         }
     }
 }

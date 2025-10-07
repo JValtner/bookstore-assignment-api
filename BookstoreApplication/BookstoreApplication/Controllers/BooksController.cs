@@ -22,7 +22,7 @@ namespace BookstoreApplication.Controllers
         {
             return Ok(await _booksService.GetAllAsync());
         }
-
+        
         // GET api/books/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOneAsync(int id)
@@ -51,6 +51,18 @@ namespace BookstoreApplication.Controllers
             await _booksService.DeleteAsync(id);
             return NoContent();
    
+        }
+        // GET /api/publishers/sortTypes
+        [HttpGet("sortTypes")]
+        public IActionResult GetSortTypes()
+        {
+            return Ok(_booksService.GetSortTypesAsync());
+        }
+        // GET /api/publishers/sort?sortType=2
+        [HttpGet("sort")]
+        public async Task<IActionResult> GetSortedPublishersAsync([FromQuery] int sortType = (int)BookSortType.BOOK_NAME_ASCENDING)
+        {
+            return Ok(await _booksService.GetAllSortedAsync(sortType));
         }
     }
 }

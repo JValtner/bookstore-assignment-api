@@ -12,6 +12,11 @@ namespace BookstoreApplication.Utils
             Key = (int)sortType; // celobrojni ključ koji će biti vezan za vrednost enumeracije (npr. 0 za NAME_ASCENDING, 1 za NAME_DESCENDING, itd.)
             Name = sortType.ToString(); // vrednost enumeracije (NAME_ASCENDING, NAME_DESCENDING, itd.)
         }
+        public SortTypeOption(BookSortType sortType)
+        {
+            Key = (int)sortType;
+            Name = sortType.ToString();
+        }
     }
 
 }

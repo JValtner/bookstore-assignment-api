@@ -26,11 +26,6 @@ namespace BookstoreApplication.Controllers
             return Ok(await _authorsService.GetAllAsync());
         }
 
-        [HttpGet("paging")]
-        public async Task<IActionResult> GetAuthorsPage([FromQuery] int page = 1, int pageSize = 5)
-        {
-            return Ok(await _authorsService.GetAllPagedAsync(page, pageSize));
-        }
         // GET api/authors/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
@@ -59,6 +54,11 @@ namespace BookstoreApplication.Controllers
             await _authorsService.DeleteAsync(id);
             return NoContent();
         }
-        
+        [HttpGet("paging")]
+        public async Task<IActionResult> GetAuthorsPage([FromQuery] int page = 1, int pageSize = 5)
+        {
+            return Ok(await _authorsService.GetAllPagedAsync(page, pageSize));
+        }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using BookstoreApplication.Exceptions;
+﻿using BookstoreApplication.DTO;
+using BookstoreApplication.Exceptions;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repository;
 using BookstoreApplication.Utils;
@@ -11,15 +12,18 @@ namespace BookstoreApplication.Services
         private readonly IPublishersRepository _publishersRepository;
         private readonly IBooksRepository _booksRepository;
         private readonly ILogger<PublishersService> _logger;
+        private readonly AutoMapper.IMapper _mapper;
 
         public PublishersService(
             IPublishersRepository publishersRepository,
             IBooksRepository booksRepository,
-            ILogger<PublishersService> logger)
+            ILogger<PublishersService> logger,
+            AutoMapper.IMapper mapper)
         {
             _publishersRepository = publishersRepository;
             _booksRepository = booksRepository;
             _logger = logger;
+            _mapper = mapper;
         }
 
         public async Task<List<Publisher>> GetAllAsync()
@@ -111,10 +115,13 @@ namespace BookstoreApplication.Services
             return exists;
         }
 
-        public Task<IEnumerable<Publisher>> GetAllSorted(int sortType) // dobavlja izdavače sortirane po tipu
+        public async Task<IEnumerable<PublisherDTO>> GetAllSortedAsync(int sortType) // dobavlja izdavače sortirane po tipu
         {
-            return _publishersRepository.GetAllSorted(sortType);
+            IEnumerable<Publisher> publishers = await _publishersRepository.GetAllSorted(sortType);
+            var dtos = publishers.Select(_mapper.Map<PublisherDTO>).ToList();
+            return dtos;
         }
+
 
         public async Task<List<SortTypeOption>> GetSortTypes()  //dobavlja vrste sortiranja
         {

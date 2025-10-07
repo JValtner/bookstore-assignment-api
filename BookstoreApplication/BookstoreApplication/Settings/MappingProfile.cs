@@ -22,6 +22,7 @@ namespace BookstoreApplication.Settings
                     opt => opt.MapFrom(src => src.Publisher != null ? src.Publisher.Name : string.Empty))
                 .ReverseMap();
             CreateMap<Author, AuthorDTO>().ReverseMap();
+            CreateMap<Publisher, PublisherDTO>().ReverseMap();
         }
 
     }

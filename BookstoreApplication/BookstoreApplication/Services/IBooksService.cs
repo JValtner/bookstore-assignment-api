@@ -1,5 +1,6 @@
 ﻿using BookstoreApplication.DTO;
 using BookstoreApplication.Models;
+using BookstoreApplication.Utils;
 
 namespace BookstoreApplication.Services
 {
@@ -13,5 +14,7 @@ namespace BookstoreApplication.Services
         Task<List<BookDTO>> GetAllAsync();
         Task<BookDetailsDTO?> GetByIdAsync(int id);
         Task<Book?> UpdateAsync(int id, Book book);
+        Task<IEnumerable<BookDTO>> GetAllSortedAsync(int sortType); // dobavlja knjige sortirane po tipu
+        Task<List<SortTypeOption>> GetSortTypesAsync(); //dobavlja vrste sortiranja
     }
 }
