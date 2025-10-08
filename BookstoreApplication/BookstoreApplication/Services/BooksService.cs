@@ -4,6 +4,7 @@ using BookstoreApplication.Exceptions;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repository;
 using BookstoreApplication.Utils;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using static System.Reflection.Metadata.BlobBuilder;
 
@@ -182,13 +183,18 @@ namespace BookstoreApplication.Services
             _logger.LogDebug("Checked existence for book ID {Id}: {Exists}", id, exists);
             return exists;
         }
-        public async Task<IEnumerable<BookDTO>> GetAllSortedAsync(int sortType)
-        {
-            IEnumerable<Book> books = await _booksRepository.GetAllSortedAsync(sortType);
-            var dtos = books.Select(_mapper.Map<BookDTO>).ToList();
-            return dtos;
-        }
+        public async Task<PaginatedList<BookDTO>> GetAllFilteredAndSortedAndPaged(BookFilter filter, int sortType, int page,int pageSize)
+            {
+                
+                PaginatedList<Book> books = await _booksRepository.GetAllFilteredAndSortedAndPaged(filter, sortType, page, pageSize);
 
+                // Map items to DTOs
+                var dtoItems = books.Items.Select(_mapper.Map<BookDTO>).ToList();
+
+                PaginatedList<BookDTO> dtos = new PaginatedList<BookDTO>(dtoItems,books.Count, books.PageIndex, pageSize);
+
+                return dtos;
+            }
 
         public async Task<List<SortTypeOption>> GetSortTypesAsync()  //dobavlja vrste sortiranja
         {

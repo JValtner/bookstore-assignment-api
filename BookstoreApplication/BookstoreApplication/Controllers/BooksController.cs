@@ -1,7 +1,9 @@
-﻿using BookstoreApplication.Models;
+﻿using BookstoreApplication.DTO;
+using BookstoreApplication.Models;
 using BookstoreApplication.Repository;
 using BookstoreApplication.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BookstoreApplication.Controllers
 {
@@ -52,17 +54,26 @@ namespace BookstoreApplication.Controllers
             return NoContent();
    
         }
+
         // GET /api/publishers/sortTypes
         [HttpGet("sortTypes")]
-        public IActionResult GetSortTypes()
+        public async Task<IActionResult> GetSortTypes()
         {
-            return Ok(_booksService.GetSortTypesAsync());
+            var sortTypes = await _booksService.GetSortTypesAsync();
+            return Ok(sortTypes);
         }
+
         // GET /api/publishers/sort?sortType=2
-        [HttpGet("sort")]
-        public async Task<IActionResult> GetSortedPublishersAsync([FromQuery] int sortType = (int)BookSortType.BOOK_NAME_ASCENDING)
-        {
-            return Ok(await _booksService.GetAllSortedAsync(sortType));
+        [HttpGet("sortFilterPage")]
+        public async Task<IActionResult> GetAllFilteredAndSortedAndPaged(
+        [FromQuery] BookFilter filter,
+        [FromQuery] int sortType = (int)BookSortType.BOOK_NAME_ASCENDING,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
+            {
+                var result = await _booksService.GetAllFilteredAndSortedAndPaged(filter, sortType, page, pageSize);
+                return Ok(result);
+            }
+
         }
-    }
 }

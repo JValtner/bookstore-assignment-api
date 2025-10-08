@@ -14,7 +14,7 @@ namespace BookstoreApplication.Services
         Task<List<BookDTO>> GetAllAsync();
         Task<BookDetailsDTO?> GetByIdAsync(int id);
         Task<Book?> UpdateAsync(int id, Book book);
-        Task<IEnumerable<BookDTO>> GetAllSortedAsync(int sortType); // dobavlja knjige sortirane po tipu
-        Task<List<SortTypeOption>> GetSortTypesAsync(); //dobavlja vrste sortiranja
+        Task<PaginatedList<BookDTO>> GetAllFilteredAndSortedAndPaged(BookFilter filter, int sortType, int page, int pageSize);
+        Task<List<SortTypeOption>> GetSortTypesAsync();
     }
 }

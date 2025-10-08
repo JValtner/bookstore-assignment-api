@@ -1,4 +1,5 @@
 ﻿using System;
+using BookstoreApplication.DTO;
 using BookstoreApplication.Models;
 using BookstoreApplication.Utils;
 using Microsoft.EntityFrameworkCore;
@@ -83,13 +84,20 @@ namespace BookstoreApplication.Repository
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<IEnumerable<Book>> GetAllSortedAsync(int sortType) // dobavlja izdavače sortirane po tipu
+        public async Task<PaginatedList<Book>> GetAllFilteredAndSortedAndPaged(BookFilter filter, int sortType, int page, int PageSize)
         {
             IQueryable<Book> books = _context.Books
                 .Include(b => b.Author)
                 .Include(b => b.Publisher);
-            books = SortBooks(books, sortType); // kod koji sortira izdavače je izdvojen u metodu ispod
-            return await books.ToListAsync();
+
+            books = FilterBooks(books, filter);
+            books = SortBooks(books, sortType);
+
+            int pageIndex = page - 1;
+            var count = await books.CountAsync();
+            var items = await books.Skip(pageIndex * PageSize).Take(PageSize).ToListAsync();
+            PaginatedList<Book> result = new PaginatedList<Book>(items, count, pageIndex, PageSize);
+            return result;
         }
         private static IQueryable<Book> SortBooks(IQueryable<Book> books, int sortType)
         {
@@ -103,6 +111,43 @@ namespace BookstoreApplication.Repository
                 (int)BookSortType.AUTHOR_NAME_DESCENDING => books.OrderByDescending(b => b.Author.FullName),
                 _ => books.OrderBy(b => b.Title),    // podrazumevano sortiranje je po nazivu rastuće
             };
+        }
+        private static IQueryable<Book> FilterBooks(IQueryable<Book> books, BookFilter filter)
+        {
+            if (!string.IsNullOrEmpty(filter.Title))
+            {
+                books = books.Where(b => b.Title.ToLower().Contains(filter.Title.ToLower()));
+            }
+            if (filter.PublishedDateFrom != null)
+            {
+                books = books.Where(b => b.PublishedDate >= filter.PublishedDateFrom);
+            }
+
+            if (filter.PublishedDateTo != null)
+            {
+                books = books.Where(b => b.PublishedDate <= filter.PublishedDateTo);
+            }
+
+            if (!string.IsNullOrEmpty(filter.AuthorFullName))
+            {
+                books = books.Where(b => b.Author.FullName.ToLower().Contains(filter.AuthorFullName.ToLower()));
+            }
+
+            if (filter.AuthorId != null)
+            {
+                books = books.Where(b => b.AuthorId == filter.AuthorId);
+            }
+            if (filter.AuthorDateOfBirthFrom != null)
+            {
+                books = books.Where(b => b.Author.DateOfBirth >= filter.AuthorDateOfBirthFrom);
+            }
+
+            if (filter.AuthorDateOfBirthTo != null)
+            {
+                books = books.Where(b => b.Author.DateOfBirth <= filter.AuthorDateOfBirthTo);
+            }
+
+            return books;
         }
 
         public async Task<List<SortTypeOption>> GetSortTypesAsync() 

@@ -1,4 +1,5 @@
-﻿using BookstoreApplication.Models;
+﻿using BookstoreApplication.DTO;
+using BookstoreApplication.Models;
 using BookstoreApplication.Utils;
 
 namespace BookstoreApplication.Repository
@@ -13,7 +14,7 @@ namespace BookstoreApplication.Repository
         Task<List<Book>> GetAllAsync();
         Task<Book?> GetByIdAsync(int id);
         Task<Book> UpdateAsync(Book book);
-        Task<IEnumerable<Book>> GetAllSortedAsync(int sortType);
+        Task<PaginatedList<Book>> GetAllFilteredAndSortedAndPaged(BookFilter filter, int sortType, int page, int PageSize);
         Task<List<SortTypeOption>> GetSortTypesAsync();
     }
 }
