@@ -1,7 +1,8 @@
-﻿using BookstoreApplication.DTO;
+﻿using BookstoreApplication.Controllers.Interface;
+using BookstoreApplication.DTO;
 using BookstoreApplication.Exceptions;
 using BookstoreApplication.Models;
-using BookstoreApplication.Repository;
+using BookstoreApplication.Models.IRepository;
 using BookstoreApplication.Utils;
 using Microsoft.Extensions.Logging;
 using static System.Reflection.Metadata.BlobBuilder;

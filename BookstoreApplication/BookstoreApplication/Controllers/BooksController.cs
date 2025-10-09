@@ -1,7 +1,7 @@
-﻿using BookstoreApplication.DTO;
+﻿using BookstoreApplication.Controllers.Interface;
+using BookstoreApplication.DTO;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repository;
-using BookstoreApplication.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

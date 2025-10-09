@@ -1,5 +1,7 @@
 ﻿using System;
+using BookstoreApplication.Controllers.Interface;
 using BookstoreApplication.Models;
+using BookstoreApplication.Models.IRepository;
 using BookstoreApplication.Repository;
 using BookstoreApplication.Services;
 using BookstoreApplication.Settings;

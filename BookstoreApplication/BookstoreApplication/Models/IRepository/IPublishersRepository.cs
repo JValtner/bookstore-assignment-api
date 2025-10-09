@@ -1,7 +1,7 @@
 ﻿using BookstoreApplication.Models;
 using BookstoreApplication.Utils;
 
-namespace BookstoreApplication.Repository
+namespace BookstoreApplication.Models.IRepository
 {
     public interface IPublishersRepository
     {

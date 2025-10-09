@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
+using BookstoreApplication.Controllers.Interface;
 using BookstoreApplication.DTO;
 using BookstoreApplication.Exceptions;
 using BookstoreApplication.Models;
-using BookstoreApplication.Repository;
+using BookstoreApplication.Models.IRepository;
 using BookstoreApplication.Utils;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;

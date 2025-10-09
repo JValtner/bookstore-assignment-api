@@ -1,5 +1,6 @@
 ﻿using System;
 using BookstoreApplication.Models;
+using BookstoreApplication.Models.IRepository;
 
 namespace BookstoreApplication.Repository
 {
