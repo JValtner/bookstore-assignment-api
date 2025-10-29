@@ -2,7 +2,7 @@
 using BookstoreApplication.Models;
 using BookstoreApplication.Utils;
 
-namespace BookstoreApplication.Controllers.Interface
+namespace BookstoreApplication.Services.IService
 {
     public interface IBooksService
     {

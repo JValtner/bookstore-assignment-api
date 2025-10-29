@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using BookstoreApplication.Controllers.Interface;
 using BookstoreApplication.DTO;
 using BookstoreApplication.Exceptions;
 using BookstoreApplication.Models;
 using BookstoreApplication.Models.IRepository;
+using BookstoreApplication.Services.IService;
 using BookstoreApplication.Utils;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -64,7 +64,8 @@ namespace BookstoreApplication.Services
             if (book == null)
             {
                 _logger.LogWarning("Attempted to add null book.");
-                throw new BadRequestException(0);
+                string msg = "Book object cannot be null.";
+                throw new BadRequestException(0, msg);
             }
 
             _logger.LogInformation("Adding new book: {Title}.", book.Title);
@@ -99,7 +100,8 @@ namespace BookstoreApplication.Services
             if (id != book.Id)
             {
                 _logger.LogWarning("Book ID mismatch: URL ID {UrlId} does not match book ID {BookId}.", id, book.Id);
-                throw new BadRequestException(id);
+                string msg = $"Book ID mismatch: URL ID {id} does not match book ID {book.Id}.";
+                throw new BadRequestException(id, msg);
             }
 
             if (!await ExistsAsync(id))

@@ -1,8 +1,8 @@
-﻿using BookstoreApplication.Controllers.Interface;
-using BookstoreApplication.DTO;
+﻿using BookstoreApplication.DTO;
 using BookstoreApplication.Exceptions;
 using BookstoreApplication.Models;
 using BookstoreApplication.Models.IRepository;
+using BookstoreApplication.Services.IService;
 using BookstoreApplication.Utils;
 using Microsoft.Extensions.Logging;
 using static System.Reflection.Metadata.BlobBuilder;
@@ -42,7 +42,8 @@ namespace BookstoreApplication.Services
             if (page < 1 || pageSize < 1)
             {
                 _logger.LogWarning("Page: ", page, " or page size: ", pageSize, " problem");
-                throw new BadRequestException(page);
+                string msg = $"Invalid pagination parameters. Page and page size must be greater than 0. Provided page: {page}, page size: {pageSize}.";
+                throw new BadRequestException(page, msg);
             }
 
             var authors = await _authorsRepository.GetAllPagedAsync(page, pageSize);
@@ -84,7 +85,8 @@ namespace BookstoreApplication.Services
             if (id != author.Id)
             {
                 _logger.LogWarning("Author ID mismatch: URL ID {UrlId} does not match author ID {AuthorId}.", id, author.Id);
-                throw new BadRequestException(id);
+                string msg = $"Author ID mismatch: URL ID {id} does not match author ID {author.Id}.";
+                throw new BadRequestException(id, msg);
             }
 
             if (!await ExistsAsync(id))

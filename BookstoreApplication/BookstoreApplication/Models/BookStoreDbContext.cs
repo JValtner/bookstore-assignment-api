@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookstoreApplication.Models
 {
-    public class BookStoreDbContext: DbContext
+    public class BookStoreDbContext: IdentityDbContext<ApplicationUser>
     {
         public BookStoreDbContext(DbContextOptions<BookStoreDbContext> options) : base(options)
         {
@@ -14,7 +15,8 @@ namespace BookstoreApplication.Models
         public DbSet<AuthorAward> AuthorAwards { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        { 
+        {
+            base.OnModelCreating(modelBuilder);
             //V4
             modelBuilder.Entity<Book>()
             .Property(e => e.PublishedDate)

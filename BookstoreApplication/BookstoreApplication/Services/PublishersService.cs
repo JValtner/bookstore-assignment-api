@@ -1,8 +1,8 @@
-﻿using BookstoreApplication.Controllers.Interface;
-using BookstoreApplication.DTO;
+﻿using BookstoreApplication.DTO;
 using BookstoreApplication.Exceptions;
 using BookstoreApplication.Models;
 using BookstoreApplication.Models.IRepository;
+using BookstoreApplication.Services.IService;
 using BookstoreApplication.Utils;
 using Microsoft.Extensions.Logging;
 
@@ -67,7 +67,8 @@ namespace BookstoreApplication.Services
             if (id != publisher.Id)
             {
                 _logger.LogWarning("Publisher ID mismatch: URL ID {UrlId} does not match publisher ID {PublisherId}.", id, publisher.Id);
-                throw new BadRequestException(id);
+                string msg = $"Publisher ID mismatch: URL ID {id} does not match publisher ID {publisher.Id}.";
+                throw new BadRequestException(id, msg);
             }
 
             var existingPublisher = await GetByIdAsync(id);

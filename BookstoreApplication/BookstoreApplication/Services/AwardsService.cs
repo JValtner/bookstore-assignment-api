@@ -1,7 +1,7 @@
 ﻿using BookstoreApplication.Repository;
 using BookstoreApplication.Models;
 using Microsoft.Extensions.Logging;
-using BookstoreApplication.Controllers.Interface;
+using BookstoreApplication.Services.IService;
 
 namespace BookstoreApplication.Services
 {

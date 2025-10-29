@@ -1,6 +1,6 @@
 ﻿using BookstoreApplication.Models;
 
-namespace BookstoreApplication.Controllers.Interface
+namespace BookstoreApplication.Services.IService
 {
     public interface IAwardsService
     {

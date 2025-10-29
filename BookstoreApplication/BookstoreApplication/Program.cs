@@ -1,19 +1,36 @@
 ﻿using System;
-using BookstoreApplication.Controllers.Interface;
 using BookstoreApplication.Models;
 using BookstoreApplication.Models.IRepository;
 using BookstoreApplication.Repository;
 using BookstoreApplication.Services;
+using BookstoreApplication.Services.IService;
 using BookstoreApplication.Settings;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Registracija Identity-a
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+  .AddEntityFrameworkStores<BookStoreDbContext>()
+  .AddDefaultTokenProviders();
+
+// Definisanje uslova koje lozinka mora da ispuni
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = true;          // Ima bar jednu cifru
+    options.Password.RequireLowercase = true;      // Ima bar jedno malo slovo
+    options.Password.RequireUppercase = true;      // Ima bar jedno veliko slovo
+    options.Password.RequireNonAlphanumeric = true;// Ima bar jedan specijalan karakter (!, @, #...)
+    options.Password.RequiredLength = 8;           // Ima bar 8 karaktera
+});
+
+// Dodavanje autentifikacije
+builder.Services.AddAuthentication();
 // AddAsync services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -30,6 +47,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<BookStoreDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 //DI - Repositories and Services
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthorsRepository, AuthorsRepository>();
 builder.Services.AddScoped<IPublishersRepository, PublishersRepository>();
 builder.Services.AddScoped<IBooksRepository, BooksRepository>();
@@ -54,6 +72,8 @@ builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
 var app = builder.Build();
 
+// Uključivanje autentifikacije
+app.UseAuthentication();
 //Exception handling middleware use
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
