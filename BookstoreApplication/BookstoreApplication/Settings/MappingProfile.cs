@@ -9,6 +9,7 @@ namespace BookstoreApplication.Settings
         {
             CreateMap<RegistrationDto, ApplicationUser>();
             CreateMap<LoginDto, ApplicationUser>();
+            CreateMap<ApplicationUser, ProfileDto>();
             CreateMap<Book, BookDTO>()
                 .ForMember(dest => dest.BookAge,
                     opt => opt.MapFrom(src => DateTime.Now.Year - src.PublishedDate.Year))

@@ -51,7 +51,8 @@ namespace BookstoreApplication.Services
             if (book == null)
             {
                 _logger.LogWarning("Book with ID {Id} not found.", id);
-                throw new NotFoundException(id);
+                string msg = $"Book with ID {id} not found.";
+                throw new NotFoundException(id, msg);
             }
 
             var dto = _mapper.Map<BookDetailsDTO>(book);
@@ -74,14 +75,16 @@ namespace BookstoreApplication.Services
             if (author == null)
             {
                 _logger.LogWarning("Author with ID {AuthorId} not found for book '{Title}'.", book.AuthorId, book.Title);
-                throw new NotFoundException(book.AuthorId);
+                string msg = $"Author with ID {book.AuthorId} not found.";
+                throw new NotFoundException(book.AuthorId, msg);
             }
 
             Publisher publisher = await _publishersService.GetByIdAsync(book.PublisherId);
             if (publisher == null)
             {
                 _logger.LogWarning("Publisher with ID {PublisherId} not found for book '{Title}'.", book.PublisherId, book.Title);
-                throw new NotFoundException(book.PublisherId);
+                string msg = $"Publisher with ID {book.PublisherId} not found.";
+                throw new NotFoundException(book.PublisherId, msg);
             }
 
             book.Author = author;
@@ -107,19 +110,22 @@ namespace BookstoreApplication.Services
             if (!await ExistsAsync(id))
             {
                 _logger.LogWarning("Book with ID {Id} not found for update.", id);
-                throw new NotFoundException(id);
+                string msg = $"Book with ID {id} not found.";
+                throw new NotFoundException(id, msg);
             }
 
             if (!await _authorsService.ExistsAsync(book.AuthorId))
             {
                 _logger.LogWarning("Author with ID {AuthorId} not found for book update.", book.AuthorId);
-                throw new NotFoundException(book.AuthorId);
+                string msg = $"Author with ID {book.AuthorId} not found.";
+                throw new NotFoundException(book.AuthorId, msg);
             }
 
             if (!await _publishersService.ExistsAsync(book.PublisherId))
             {
                 _logger.LogWarning("Publisher with ID {PublisherId} not found for book update.", book.PublisherId);
-                throw new NotFoundException(book.PublisherId);
+                string msg = $"Publisher with ID {book.PublisherId} not found.";
+                throw new NotFoundException(book.PublisherId, msg);
             }
 
             book.Author = await _authorsService.GetByIdAsync(book.AuthorId);
@@ -139,7 +145,8 @@ namespace BookstoreApplication.Services
             if (existingBook == null)
             {
                 _logger.LogWarning("Book with ID {Id} not found for deletion.", id);
-                throw new NotFoundException(id);
+                string msg = $"Book with ID {id} not found.";
+                throw new NotFoundException(id, msg);
             }
 
             bool deleted = await _booksRepository.DeleteAsync(id);
@@ -157,7 +164,8 @@ namespace BookstoreApplication.Services
             if (!await _publishersService.ExistsAsync(publisherId))
             {
                 _logger.LogWarning("Publisher with ID {PublisherId} not found for cascade delete.", publisherId);
-                throw new NotFoundException(publisherId);
+                string msg = $"Publisher with ID {publisherId} not found.";
+                throw new NotFoundException(publisherId, msg);
             }
 
             bool result = await _booksRepository.DeleteAllForPublisherAsync(publisherId);
@@ -172,7 +180,8 @@ namespace BookstoreApplication.Services
             if (!await _authorsService.ExistsAsync(authorId))
             {
                 _logger.LogWarning("Author with ID {AuthorId} not found for cascade delete.", authorId);
-                throw new NotFoundException(authorId);
+                string msg = $"Author with ID {authorId} not found.";
+                throw new NotFoundException(authorId, msg);
             }
 
             bool result = await _booksRepository.DeleteAllForAuthorAsync(authorId);

@@ -75,7 +75,8 @@ namespace BookstoreApplication.Services
             if (existingPublisher == null)
             {
                 _logger.LogWarning("Publisher with ID {Id} not found for update.", id);
-                throw new NotFoundException(id);
+                string msg = $"Publisher with ID {id} not found.";
+                throw new NotFoundException(id, msg);
             }
 
             var updatedPublisher = await _publishersRepository.UpdateAsync(publisher);
@@ -91,7 +92,8 @@ namespace BookstoreApplication.Services
             if (existingPublisher == null)
             {
                 _logger.LogWarning("Publisher with ID {Id} not found for deletion.", id);
-                throw new NotFoundException(id);
+                string msg = $"Publisher with ID {id} not found.";
+                throw new NotFoundException(id, msg);
             }
 
             _logger.LogInformation("Deleting all books for publisher ID {Id} (cascade delete).", id);

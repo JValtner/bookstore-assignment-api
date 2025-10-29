@@ -92,7 +92,8 @@ namespace BookstoreApplication.Services
             if (!await ExistsAsync(id))
             {
                 _logger.LogWarning("Author with ID {Id} not found for update.", id);
-                throw new NotFoundException(id);
+                string msg = $"Author with ID {id} not found for update.";
+                throw new NotFoundException(id, msg);
             }
 
             var updatedAuthor = await _authorsRepository.UpdateAsync(author);
@@ -107,7 +108,8 @@ namespace BookstoreApplication.Services
             if (!await ExistsAsync(id))
             {
                 _logger.LogWarning("Author with ID {Id} not found for deletion.", id);
-                throw new NotFoundException(id);
+                string msg = $"Author with ID {id} not found for deletion.";
+                throw new NotFoundException(id, msg);
             }
 
             _logger.LogInformation("Deleting all books for author ID {Id} (cascade delete).", id);
