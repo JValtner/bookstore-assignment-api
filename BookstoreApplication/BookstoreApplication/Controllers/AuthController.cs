@@ -15,7 +15,7 @@ namespace BookstoreApplication.Controllers
         {
             _authService = authService;
         }
-
+        [Authorize(Policy = "UnregisteredGet")]
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegistrationDto data)
         {
@@ -26,6 +26,7 @@ namespace BookstoreApplication.Controllers
             await _authService.RegisterAsync(data);
             return NoContent();
         }
+        [Authorize(Policy = "UnregisteredGet")]
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto data)
         {
@@ -36,7 +37,7 @@ namespace BookstoreApplication.Controllers
             var token = await _authService.Login(data);
             return Ok(token);
         }
-        [Authorize]
+        [Authorize(Policy ="RegisteredGet")]
         [HttpGet("profile")]
         public async Task<IActionResult> Profile()
         {

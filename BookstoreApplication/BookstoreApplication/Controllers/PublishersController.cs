@@ -2,6 +2,7 @@
 using BookstoreApplication.Models;
 using BookstoreApplication.Repository;
 using BookstoreApplication.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -20,14 +21,16 @@ namespace BookstoreApplication.Controllers
 
         }
         // GET: api/publishers
+        [Authorize(Policy = "PublicGet")]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
             return Ok(await _publishersService.GetAllAsync());
         }
-        
+
 
         // GET api/publishers/5
+        [Authorize(Policy = "PublicGet")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOneAsync(int id)
         {
@@ -35,6 +38,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // POST api/publishers
+        [Authorize(Policy = "RegisteredPost")]
         [HttpPost]
         public async Task<IActionResult> PostAsync(Publisher publisher)
         {
@@ -42,6 +46,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // PUT api/publishers/5
+        [Authorize(Policy = "EditContent")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAsync(int id, Publisher publisher)
         {
@@ -49,6 +54,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // DELETE api/publishers/5
+        [Authorize(Policy = "EditContent")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
@@ -56,12 +62,14 @@ namespace BookstoreApplication.Controllers
             return NoContent();
         }
         // GET /api/publishers/sortTypes
+        [Authorize(Policy = "PublicGet")]
         [HttpGet("sortTypes")]
         public IActionResult GetSortTypes()
         {
             return Ok(_publishersService.GetSortTypes());
         }
         // GET /api/publishers/sort?sortType=2
+        [Authorize(Policy = "PublicGet")]
         [HttpGet("sort")]
         public async Task<IActionResult> GetSortedPublishers([FromQuery] int sortType = (int)PublisherSortType.NAME_ASCENDING)
         {

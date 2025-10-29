@@ -82,11 +82,14 @@ namespace BookstoreApplication.Services
         private async Task<string> GenerateJwt(ApplicationUser user)
         {
             var claims = new List<Claim>
-    {
-      new Claim(JwtRegisteredClaimNames.Sub, user.Id),  // 'sub' atribut
-      new Claim("username", user.UserName),  // 'username' atribut
-      new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())  // jedinstveni identifikator tokena
-    };
+            {
+              new Claim(JwtRegisteredClaimNames.Sub, user.Id),  // 'sub' atribut
+              new Claim("username", user.UserName),  // 'username' atribut
+              new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())  // jedinstveni identifikator tokena
+            };
+            // Roles
+            var roles = await _userManager.GetRolesAsync(user);
+            claims.AddRange(roles.Select(role => new Claim("role", role)));
 
             // Konfiguracija za generisanje tokena
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

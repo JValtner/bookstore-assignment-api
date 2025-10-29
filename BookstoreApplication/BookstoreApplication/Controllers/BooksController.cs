@@ -2,6 +2,7 @@
 using BookstoreApplication.Models;
 using BookstoreApplication.Repository;
 using BookstoreApplication.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -19,13 +20,15 @@ namespace BookstoreApplication.Controllers
         }
 
         // GET: api/books
+        [Authorize(Policy = "PublicGet")]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
             return Ok(await _booksService.GetAllAsync());
         }
-        
+
         // GET api/books/5
+        [Authorize(Policy = "PublicGet")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOneAsync(int id)
         {
@@ -33,6 +36,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // POST api/books
+        [Authorize(Policy = "RegisteredPost")]
         [HttpPost]
         public async Task<IActionResult> PostAsync(Book book)
         {
@@ -40,6 +44,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // PUT api/books/5
+        [Authorize(Policy = "EditContent")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAsync(int id, Book book)
         {
@@ -47,6 +52,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // DELETE api/books/5
+        [Authorize(Policy = "EditContent")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
@@ -56,6 +62,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // GET /api/publishers/sortTypes
+        [Authorize(Policy = "PublicGet")]
         [HttpGet("sortTypes")]
         public async Task<IActionResult> GetSortTypes()
         {
@@ -64,6 +71,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // GET /api/publishers/sort?sortType=2
+        [Authorize(Policy = "PublicGet")]
         [HttpGet("sortFilterPage")]
         public async Task<IActionResult> GetAllFilteredAndSortedAndPaged(
         [FromQuery] BookFilter filter,

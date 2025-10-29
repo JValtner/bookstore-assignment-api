@@ -3,6 +3,7 @@ using BookstoreApplication.Models;
 using BookstoreApplication.Repository;
 using BookstoreApplication.Repository;
 using BookstoreApplication.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -20,6 +21,7 @@ namespace BookstoreApplication.Controllers
             _authorsService = authorsService;
         }
         // GET: api/authors
+        [Authorize(Policy = "PublicGet")]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -27,6 +29,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // GET api/authors/5
+        [Authorize(Policy = "PublicGet")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
@@ -34,6 +37,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // POST api/authors
+        [Authorize(Policy = "RegisteredPost")]
         [HttpPost]
         public async Task<IActionResult> PostAsync(Author author)
         {
@@ -41,6 +45,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // PUT api/authors/5
+        [Authorize(Policy = "EditContent")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAsync(int id, Author author)
         {
@@ -48,12 +53,15 @@ namespace BookstoreApplication.Controllers
         }
 
         // DELETE api/authors/5
+        [Authorize(Policy = "EditContent")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             await _authorsService.DeleteAsync(id);
             return NoContent();
         }
+
+        [Authorize(Policy = "PublicGet")]
         [HttpGet("paging")]
         public async Task<IActionResult> GetAuthorsPage([FromQuery] int page = 1, int pageSize = 5)
         {

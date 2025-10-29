@@ -7,6 +7,7 @@ using BookstoreApplication.Repository;
 using BookstoreApplication.Services;
 using BookstoreApplication.Services.IService;
 using BookstoreApplication.Settings;
+using BookstoreApplication.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 // Dodavanje autentifikacije
 builder.Services.AddAuthentication();
+
 // AddAsync services to the container.
 
 builder.Services.AddControllers();
@@ -79,6 +81,27 @@ builder.Services.AddSwaggerGen(c =>
     }
   });
 });
+builder.Services.AddAuthorization(options =>
+{
+    // Publicly accessible endpoints
+    options.AddPolicy("PublicGet",
+        policy => policy.RequireAssertion(_ => true)); // anyone (authenticated or not)
+
+    // Content management
+    options.AddPolicy("RegisteredGet",
+        policy => policy.RequireRole("Editor", "Librarian"));
+    options.AddPolicy("RegisteredPost",
+        policy => policy.RequireRole("Editor", "Librarian"));
+    options.AddPolicy("EditContent",
+        policy => policy.RequireRole("Editor"));
+
+    // Anonymous-only (unregistered) users
+    options.AddPolicy("UnregisteredGet",
+        policy => policy.RequireAssertion(context =>
+            context.User?.Identity == null || !context.User.Identity.IsAuthenticated));
+});
+
+
 
 // Configure PostgreSQL database connection
 builder.Services.AddDbContext<BookStoreDbContext>(options =>
@@ -148,7 +171,10 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 
 app.UseAuthorization();
+app.UseAuthorization();
 
 app.MapControllers();
 
+// Seed default users and roles
+await SeedData.SeedDataAsync(app);
 app.Run();
