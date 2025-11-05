@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookstoreApplication.DTO;
+using BookstoreApplication.DTO.ExternalComics;
 using BookstoreApplication.Models;
 namespace BookstoreApplication.Settings
 {
@@ -26,6 +27,7 @@ namespace BookstoreApplication.Settings
                 .ReverseMap();
             CreateMap<Author, AuthorDTO>().ReverseMap();
             CreateMap<Publisher, PublisherDTO>().ReverseMap();
+
         }
 
     }

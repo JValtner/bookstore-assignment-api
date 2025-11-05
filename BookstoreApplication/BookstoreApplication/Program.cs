@@ -1,5 +1,4 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Text;
 using BookstoreApplication.Models;
 using BookstoreApplication.Models.IRepository;
@@ -17,44 +16,45 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Registracija Identity-a
+// Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-  .AddEntityFrameworkStores<BookStoreDbContext>()
-  .AddDefaultTokenProviders();
+    .AddEntityFrameworkStores<BookStoreDbContext>()
+    .AddDefaultTokenProviders();
 
-// Definisanje uslova koje lozinka mora da ispuni
+// Password rules
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    options.Password.RequireDigit = true;          // Ima bar jednu cifru
-    options.Password.RequireLowercase = true;      // Ima bar jedno malo slovo
-    options.Password.RequireUppercase = true;      // Ima bar jedno veliko slovo
-    options.Password.RequireNonAlphanumeric = true;// Ima bar jedan specijalan karakter (!, @, #...)
-    options.Password.RequiredLength = 8;           // Ima bar 8 karaktera
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 8;
 });
 
-// Dodavanje autentifikacije
-builder.Services.AddAuthentication();
+// Controllers + JSON options
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 
-// AddAsync services to the container.
-
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+//CORS
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(
-        builder =>
-        {
-            builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
-        });
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")  // your React dev server
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Building Example API", Version = "v1" });
 
-    // Definisanje JWT Bearer autentifikacije
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -65,48 +65,39 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Insert JWT token"
     });
 
-    // Primena Bearer autentifikacije
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
-  {
     {
-      new OpenApiSecurityScheme
-      {
-        Reference = new OpenApiReference
         {
-          Type = ReferenceType.SecurityScheme,
-          Id = "Bearer"
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
         }
-      },
-      Array.Empty<string>()
-    }
-  });
+    });
 });
+
+// Authorization policies
 builder.Services.AddAuthorization(options =>
 {
-    // Publicly accessible endpoints
-    options.AddPolicy("PublicGet",
-        policy => policy.RequireAssertion(_ => true)); // anyone (authenticated or not)
-
-    // Content management
-    options.AddPolicy("RegisteredGet",
-        policy => policy.RequireRole("Editor", "Librarian"));
-    options.AddPolicy("RegisteredPost",
-        policy => policy.RequireRole("Editor", "Librarian"));
-    options.AddPolicy("EditContent",
-        policy => policy.RequireRole("Editor"));
-
-    // Anonymous-only (unregistered) users
-    options.AddPolicy("UnregisteredGet",
-        policy => policy.RequireAssertion(context =>
+    options.AddPolicy("PublicGet", policy => policy.RequireAssertion(_ => true));
+    options.AddPolicy("RegisteredGet", policy => policy.RequireRole("Editor", "Librarian"));
+    options.AddPolicy("RegisteredPost", policy => policy.RequireRole("Editor", "Librarian"));
+    options.AddPolicy("EditContent", policy => policy.RequireRole("Editor"));
+    options.AddPolicy("UnregisteredGet", policy =>
+        policy.RequireAssertion(context =>
             context.User?.Identity == null || !context.User.Identity.IsAuthenticated));
 });
 
-
-
-// Configure PostgreSQL database connection
+// Database
 builder.Services.AddDbContext<BookStoreDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-//DI - Repositories and Services
+
+// DI - Repositories and Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthorsRepository, AuthorsRepository>();
 builder.Services.AddScoped<IPublishersRepository, PublishersRepository>();
@@ -114,12 +105,13 @@ builder.Services.AddScoped<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IAuthorsService, AuthorsService>();
 builder.Services.AddScoped<IBooksService, BooksService>();
 builder.Services.AddScoped<IPublishersService, PublishersService>();
+builder.Services.AddScoped<IIssuesService, IssuesService>();
+builder.Services.AddScoped<IVolumesService, VolumesService>();
 
-//Automapper
-builder.Services.AddAutoMapper(cfg => {
-    cfg.AddProfile<MappingProfile>();
-});
-//Serilog
+// Automapper
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
+
+// Serilog
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
@@ -127,12 +119,12 @@ var logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
-//Exception handling middleware
+// Exception handling middleware
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
-// Uključivanje autentifikacije
+// JWT Authentication
 builder.Services.AddAuthentication(options =>
-{ // Naglašavamo da koristimo JWT
+{
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
@@ -140,41 +132,41 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateLifetime = true, // Validacija da li je token istekao
-
-        ValidateIssuer = true,   // Validacija URL-a aplikacije koja izdaje token
-        ValidIssuer = builder.Configuration["Jwt:Issuer"], // URL aplikacije koja izdaje token (čita se iz appsettings.json)
-
-        ValidateAudience = true, // Validacija URL-a aplikacije koja koristi token
-        ValidAudience = builder.Configuration["Jwt:Audience"], // URL aplikacije koja koristi token (čita se iz appsettings.json)
-
-        ValidateIssuerSigningKey = true, // Validacija ključa za potpisivanje tokena (koji se koristi i pri proveri potpisa)
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])), //Ključ za proveru tokena (čita se iz appsettings.json)
-
-        RoleClaimType = ClaimTypes.Role // Potrebno za kontrolu pristupa, što ćemo videti kasnije
+        ValidateLifetime = true,
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        RoleClaimType = ClaimTypes.Role
     };
 });
 
+// External services
+builder.Services.AddHttpClient<ComicVineConnection>();
+builder.Services.AddScoped<IComicVineConnection, ComicVineConnection>();
+
 var app = builder.Build();
 
-
-//Exception handling middleware use
+// Middleware pipeline
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseCors();
+app.UseCors("AllowFrontend");
 
-app.UseAuthorization();
+app.UseAuthentication();   
 app.UseAuthorization();
 
 app.MapControllers();
 
 // Seed default users and roles
 await SeedData.SeedDataAsync(app);
+
 app.Run();

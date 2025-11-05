@@ -1,0 +1,130 @@
+﻿using System.ComponentModel.Design;
+using System.Text.Json;
+using BookstoreApplication.DTO.ExternalComics;
+using BookstoreApplication.Models.IRepository;
+using BookstoreApplication.Services.IService;
+using BookstoreApplication.Utils;
+
+namespace BookstoreApplication.Services
+{
+    public class IssuesService : IIssuesService
+    {
+        private readonly IComicVineConnection _comicVineConnection;
+        private readonly IConfiguration _config;
+        private readonly ILogger<IssuesService> _logger;
+
+        public IssuesService(IComicVineConnection comicVineConnection, IConfiguration configuration, ILogger<IssuesService> logger)
+        {
+            _comicVineConnection = comicVineConnection;
+            _config = configuration;
+            _logger = logger;
+        }
+
+        public async Task<PaginatedList<IssueDTO>> GetIssuesByVolume(string filter, string? sortDirection, int pageIndex, int pageSize)
+        {
+            int offset = (pageIndex - 1) * pageSize;
+
+            if (string.IsNullOrWhiteSpace(filter))
+                return new PaginatedList<IssueDTO>(new List<IssueDTO>(), 0, pageIndex, pageSize);
+
+            // Ensure volumeId has the prefix
+            var volumeId = filter.StartsWith("4050-") ? filter : $"4050-{filter}";
+            var apiKey = _config["ComicVineAPIKey"];
+            var baseUrl = _config["ComicVineBaseUrl"];
+
+            // Extract numeric ID from volumeId
+            if (!int.TryParse(volumeId.Split('-').Last(), out int numericVolumeId))
+            {
+                _logger.LogWarning("Invalid volume ID format: {VolumeId}", volumeId);
+                return new PaginatedList<IssueDTO>(new List<IssueDTO>(), 0, pageIndex, pageSize);
+            }
+
+            // Step 1: Verify that the volume exists
+            var validateUrl = $"{baseUrl}/volume/{volumeId}/?api_key={apiKey}&format=json&field_list=id,name";
+            var volumeJson = await _comicVineConnection.Get(validateUrl);
+
+            using (var volumeDoc = JsonDocument.Parse(volumeJson))
+            {
+                var root = volumeDoc.RootElement;
+                if (!root.TryGetProperty("results", out var volResult) || volResult.ValueKind != JsonValueKind.Object)
+                {
+                    _logger.LogWarning("ComicVine returned no valid volume for {VolumeId}", volumeId);
+                    return new PaginatedList<IssueDTO>(new List<IssueDTO>(), 0, pageIndex, pageSize);
+                }
+            }
+
+            // Step 2: Fetch issues
+            var issuesUrl = $"{baseUrl}/issues" +
+                            $"?api_key={apiKey}" +
+                            $"&format=json" +
+                            $"&field_list=id,name,volume,deck,image,site_detail_url,date_added,date_last_updated" +
+                            $"&limit={pageSize}" +
+                            $"&offset={offset}" +
+                            $"&sort=name:{sortDirection}" +
+                            $"&filter=volume:{numericVolumeId}";
+
+            var json = await _comicVineConnection.Get(issuesUrl);
+            _logger.LogInformation(json);
+
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            using var doc = JsonDocument.Parse(json);
+            var rootElement = doc.RootElement;
+
+            int totalCount = 0;
+            List<IssueDTO> items = new();
+
+            if (rootElement.TryGetProperty("number_of_total_results", out var total))
+                totalCount = total.GetInt32();
+
+            if (rootElement.TryGetProperty("results", out var results) &&
+                results.ValueKind == JsonValueKind.Array)
+            {
+                items = JsonSerializer.Deserialize<List<IssueDTO>>(results.GetRawText(), options) ?? new();
+
+                // Step 3: Discard wrong-volume issues (Doctor Zero)
+                items = items.Where(i => i.Volume != null && i.Volume.Id == numericVolumeId).ToList();
+
+                if (items.Count == 0)
+                    _logger.LogWarning("ComicVine returned mismatched results for volume {VolumeId}", volumeId);
+            }
+
+            return new PaginatedList<IssueDTO>(items, totalCount, pageIndex, pageSize);
+        }
+
+        public async Task<IssueDTO> GetIssue(int id)
+        {
+            var url = $"{_config["ComicVineBaseUrl"]}/issue/{id}" +
+                      $"?api_key={_config["ComicVineAPIKey"]}" +
+                      $"&format=json" +
+                      $"&field_list=id,name,volume,deck,image,site_detail_url,date_added,date_last_updated";
+
+            var json = await _comicVineConnection.Get(url);
+
+            using var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("results", out var result) &&
+                result.ValueKind == JsonValueKind.Object)
+            {
+                return new IssueDTO
+                {
+                    Id = result.GetProperty("id").GetInt32(),
+                    Name = result.GetProperty("name").GetString(),
+                    Deck = result.GetProperty("deck").GetString(),
+                    Image = new ComicVineImage
+                    {
+                        Icon_url = result.GetProperty("image").GetProperty("icon_url").GetString(),
+                        Medium_url = result.GetProperty("image").GetProperty("medium_url").GetString(),
+                        Super_url = result.GetProperty("image").GetProperty("super_url").GetString()
+                    },
+                    Site_detail_url = result.GetProperty("site_detail_url").GetString(),
+                    Date_added = result.GetProperty("date_added").GetString(),
+                    Date_last_updated = result.GetProperty("date_last_updated").GetString()
+                };
+            }
+
+            return null;
+        }
+
+
+    }
+
+}
