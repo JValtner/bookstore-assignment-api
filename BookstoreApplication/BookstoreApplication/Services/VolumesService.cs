@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
-using BookstoreApplication.DTO;
-using BookstoreApplication.DTO.ExternalComics;
+using BookstoreApplication.Models.ExternalComics;
 using BookstoreApplication.Models.IRepository;
 using BookstoreApplication.Services.IService;
 using BookstoreApplication.Utils;

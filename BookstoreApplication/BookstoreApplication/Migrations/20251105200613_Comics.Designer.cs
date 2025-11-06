@@ -3,6 +3,7 @@ using System;
 using BookstoreApplication.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookstoreApplication.Migrations
 {
     [DbContext(typeof(BookStoreDbContext))]
-    partial class BookStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251105200613_Comics")]
+    partial class Comics
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -528,6 +531,15 @@ namespace BookstoreApplication.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<string>("ImageIconUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageMediumUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageSuperUrl")
+                        .HasColumnType("text");
+
                     b.Property<int>("Issue_number")
                         .HasColumnType("integer");
 
@@ -545,6 +557,15 @@ namespace BookstoreApplication.Migrations
 
                     b.Property<int>("VineId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("VolumeApiUrl")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("VolumeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("VolumeName")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -627,13 +648,13 @@ namespace BookstoreApplication.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "cc04dae4-e8f3-4354-b953-b5d4cdbda432",
+                            Id = "abc1bbf4-921e-4f65-a853-3c65e1dded89",
                             Name = "Librarian",
                             NormalizedName = "LIBRARIAN"
                         },
                         new
                         {
-                            Id = "19d970cd-b477-4367-9460-c6e2ca086e5f",
+                            Id = "355d274c-5ada-402f-aa44-dbbf72896eec",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });
@@ -781,70 +802,6 @@ namespace BookstoreApplication.Migrations
                     b.Navigation("Author");
 
                     b.Navigation("Publisher");
-                });
-
-            modelBuilder.Entity("BookstoreApplication.Models.ExternalComics.LocalIssue", b =>
-                {
-                    b.OwnsOne("BookstoreApplication.Models.ExternalComics.ComicVineImage", "Image", b1 =>
-                        {
-                            b1.Property<int>("LocalIssueId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Icon_url")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("Image_IconUrl");
-
-                            b1.Property<string>("Medium_url")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("Image_MediumUrl");
-
-                            b1.Property<string>("Super_url")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("Image_SuperUrl");
-
-                            b1.HasKey("LocalIssueId");
-
-                            b1.ToTable("ComicVineImages");
-
-                            b1.WithOwner()
-                                .HasForeignKey("LocalIssueId");
-                        });
-
-                    b.OwnsOne("BookstoreApplication.Models.ExternalComics.ComicVineVolume", "Volume", b1 =>
-                        {
-                            b1.Property<int>("LocalIssueId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Api_detail_url")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("Volume_ApiDetailUrl");
-
-                            b1.Property<int>("Id")
-                                .HasColumnType("integer")
-                                .HasColumnName("Volume_Id");
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("Volume_Name");
-
-                            b1.HasKey("LocalIssueId");
-
-                            b1.ToTable("ComicVineVolumes");
-
-                            b1.WithOwner()
-                                .HasForeignKey("LocalIssueId");
-                        });
-
-                    b.Navigation("Image")
-                        .IsRequired();
-
-                    b.Navigation("Volume")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

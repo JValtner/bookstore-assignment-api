@@ -1,5 +1,8 @@
-﻿namespace BookstoreApplication.DTO.ExternalComics
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace BookstoreApplication.Models.ExternalComics
 {
+    [Owned]
     public class ComicVineVolume
     {
         public int Id { get; set; }

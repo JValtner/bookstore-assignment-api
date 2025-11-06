@@ -1,4 +1,5 @@
-﻿using BookstoreApplication.Services;
+﻿using BookstoreApplication.DTO.ExternalComics;
+using BookstoreApplication.Services;
 using BookstoreApplication.Services.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,5 +24,18 @@ namespace BookstoreApplication.Controllers
         {
             return Ok(await _issuesService.GetIssuesByVolume(filter, sortdirection, page, pageSize));
         }
+
+        //POST /api/issues/
+        //[Authorize(Policy = "EditContent")]
+        [HttpPost("local")]
+        public async Task<IActionResult> AddLocalIssue([FromBody] LocalIssueDTO dto)
+        {
+            if (dto == null)
+                return BadRequest("Invalid issue data.");
+
+            var created = await _issuesService.AddLocalIssueAsync(dto);
+            return Ok(created);
+        }
+
     }
 }

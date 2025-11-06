@@ -3,7 +3,7 @@ using System.Text.Json;
 using BookstoreApplication.Models.IRepository;
 using BookstoreApplication.Exceptions;
 
-namespace BookstoreApplication.Repository
+namespace BookstoreApplication.Repository.NewFolder
 {
     public class ComicVineConnection : IComicVineConnection
     {

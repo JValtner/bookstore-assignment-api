@@ -3,6 +3,8 @@ using System.Text;
 using BookstoreApplication.Models;
 using BookstoreApplication.Models.IRepository;
 using BookstoreApplication.Repository;
+using BookstoreApplication.Repository.ExternalComics;
+using BookstoreApplication.Repository.NewFolder;
 using BookstoreApplication.Services;
 using BookstoreApplication.Services.IService;
 using BookstoreApplication.Settings;
@@ -107,6 +109,7 @@ builder.Services.AddScoped<IBooksService, BooksService>();
 builder.Services.AddScoped<IPublishersService, PublishersService>();
 builder.Services.AddScoped<IIssuesService, IssuesService>();
 builder.Services.AddScoped<IVolumesService, VolumesService>();
+builder.Services.AddScoped<IComicsRepository, ComicsRepository>();
 
 // Automapper
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());

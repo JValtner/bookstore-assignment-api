@@ -1,5 +1,8 @@
-﻿namespace BookstoreApplication.DTO.ExternalComics
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace BookstoreApplication.Models.ExternalComics
 {
+    [Owned]
     public class ComicVineImage
     {
         public string Icon_url { get; set; }

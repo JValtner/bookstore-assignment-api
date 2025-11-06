@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BookstoreApplication.Models.ExternalComics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,9 @@ namespace BookstoreApplication.Models
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<Award> Awards { get; set; }
         public DbSet<AuthorAward> AuthorAwards { get; set; }
+        public DbSet<LocalIssue> LocalIssues { get; set; }
+        public DbSet<ComicVineImage> ComicVineImages { get; set; }
+        public DbSet<ComicVineVolume> ComicVineVolumes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +26,25 @@ namespace BookstoreApplication.Models
               new IdentityRole { Name = "Librarian", NormalizedName = "LIBRARIAN" },
               new IdentityRole { Name = "Editor", NormalizedName = "EDITOR" }
             );
+            modelBuilder.Entity<LocalIssue>(entity =>
+            {
+                entity.HasKey(i => i.Id);
+
+                entity.OwnsOne(i => i.Volume, vol =>
+                {
+                    vol.Property(v => v.Id).HasColumnName("Volume_Id");
+                    vol.Property(v => v.Name).HasColumnName("Volume_Name");
+                    vol.Property(v => v.Api_detail_url).HasColumnName("Volume_ApiDetailUrl");
+                });
+
+                entity.OwnsOne(i => i.Image, img =>
+                {
+                    img.Property(v => v.Icon_url).HasColumnName("Image_IconUrl");
+                    img.Property(v => v.Medium_url).HasColumnName("Image_MediumUrl");
+                    img.Property(v => v.Super_url).HasColumnName("Image_SuperUrl");
+                });
+            });
+
             //V4
             modelBuilder.Entity<Book>()
             .Property(e => e.PublishedDate)

@@ -1,4 +1,4 @@
-﻿using BookstoreApplication.DTO.ExternalComics;
+﻿using BookstoreApplication.Models.ExternalComics;
 
 public class VolumeDTO
 {

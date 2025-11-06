@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.Design;
-using System.Text.Json;
+﻿using System.Text.Json;
+using AutoMapper;
 using BookstoreApplication.DTO.ExternalComics;
+using BookstoreApplication.Models.ExternalComics;
 using BookstoreApplication.Models.IRepository;
 using BookstoreApplication.Services.IService;
 using BookstoreApplication.Utils;
@@ -9,15 +10,19 @@ namespace BookstoreApplication.Services
 {
     public class IssuesService : IIssuesService
     {
+        private readonly IComicsRepository _comicsRepository;
         private readonly IComicVineConnection _comicVineConnection;
         private readonly IConfiguration _config;
         private readonly ILogger<IssuesService> _logger;
+        private readonly IMapper _mapper;
 
-        public IssuesService(IComicVineConnection comicVineConnection, IConfiguration configuration, ILogger<IssuesService> logger)
+        public IssuesService(IComicVineConnection comicVineConnection, IConfiguration configuration, ILogger<IssuesService> logger, IMapper mapper, IComicsRepository comicsRepository)
         {
+            _comicsRepository = comicsRepository;
             _comicVineConnection = comicVineConnection;
             _config = configuration;
             _logger = logger;
+            _mapper = mapper;
         }
 
         public async Task<PaginatedList<IssueDTO>> GetIssuesByVolume(string filter, string? sortDirection, int pageIndex, int pageSize)
@@ -57,7 +62,7 @@ namespace BookstoreApplication.Services
             var issuesUrl = $"{baseUrl}/issues" +
                             $"?api_key={apiKey}" +
                             $"&format=json" +
-                            $"&field_list=id,name,volume,deck,image,site_detail_url,date_added,date_last_updated" +
+                            $"&field_list=id,name,volume,deck,description,issue_number,image,site_detail_url,date_added,date_last_updated" +
                             $"&limit={pageSize}" +
                             $"&offset={offset}" +
                             $"&sort=name:{sortDirection}" +
@@ -81,7 +86,7 @@ namespace BookstoreApplication.Services
             {
                 items = JsonSerializer.Deserialize<List<IssueDTO>>(results.GetRawText(), options) ?? new();
 
-                // Step 3: Discard wrong-volume issues (Doctor Zero)
+                // Step 3: Discard wrong-volume issues 
                 items = items.Where(i => i.Volume != null && i.Volume.Id == numericVolumeId).ToList();
 
                 if (items.Count == 0)
@@ -91,39 +96,17 @@ namespace BookstoreApplication.Services
             return new PaginatedList<IssueDTO>(items, totalCount, pageIndex, pageSize);
         }
 
-        public async Task<IssueDTO> GetIssue(int id)
+        public async Task<LocalIssueDTO> AddLocalIssueAsync(LocalIssueDTO dto)
         {
-            var url = $"{_config["ComicVineBaseUrl"]}/issue/{id}" +
-                      $"?api_key={_config["ComicVineAPIKey"]}" +
-                      $"&format=json" +
-                      $"&field_list=id,name,volume,deck,image,site_detail_url,date_added,date_last_updated";
+            _logger.LogInformation("Saving local issue {@Dto}", dto);
 
-            var json = await _comicVineConnection.Get(url);
+            var entity = _mapper.Map<LocalIssue>(dto);
+            await _comicsRepository.AddAsync(entity);
 
-            using var doc = JsonDocument.Parse(json);
-            if (doc.RootElement.TryGetProperty("results", out var result) &&
-                result.ValueKind == JsonValueKind.Object)
-            {
-                return new IssueDTO
-                {
-                    Id = result.GetProperty("id").GetInt32(),
-                    Name = result.GetProperty("name").GetString(),
-                    Deck = result.GetProperty("deck").GetString(),
-                    Image = new ComicVineImage
-                    {
-                        Icon_url = result.GetProperty("image").GetProperty("icon_url").GetString(),
-                        Medium_url = result.GetProperty("image").GetProperty("medium_url").GetString(),
-                        Super_url = result.GetProperty("image").GetProperty("super_url").GetString()
-                    },
-                    Site_detail_url = result.GetProperty("site_detail_url").GetString(),
-                    Date_added = result.GetProperty("date_added").GetString(),
-                    Date_last_updated = result.GetProperty("date_last_updated").GetString()
-                };
-            }
+            _logger.LogInformation("Local issue saved with ID {Id}", entity.Id);
+            return _mapper.Map<LocalIssueDTO>(entity);
 
-            return null;
         }
-
 
     }
 
