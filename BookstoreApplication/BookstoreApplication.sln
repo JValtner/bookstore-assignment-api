@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookstoreApplication", "BookstoreApplication\BookstoreApplication.csproj", "{7F9D6CF5-E96A-4209-90D6-AADE23727E63}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sql AuthorsBooksGenerator", "Sql AuthorsBooksGenerator\Sql AuthorsBooksGenerator.csproj", "{FD813A86-EAC9-478C-BA40-18A73F035810}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7F9D6CF5-E96A-4209-90D6-AADE23727E63} = {7F9D6CF5-E96A-4209-90D6-AADE23727E63}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

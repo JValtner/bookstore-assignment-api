@@ -3,6 +3,7 @@ using System;
 using BookstoreApplication.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookstoreApplication.Migrations
 {
     [DbContext(typeof(BookStoreDbContext))]
-    partial class BookStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251111164032_Indexing")]
+    partial class Indexing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -383,6 +386,10 @@ namespace BookstoreApplication.Migrations
                     b.HasIndex("AuthorId")
                         .HasDatabaseName("IX_Book_AuthorId");
 
+                    b.HasIndex("ISBN")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Book_ISBN");
+
                     b.HasIndex("PublisherId");
 
                     b.HasIndex("Title")
@@ -684,13 +691,13 @@ namespace BookstoreApplication.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e9306185-11d2-4123-915a-c43e82691a43",
+                            Id = "508c6688-3c8a-42cf-938d-b8709c7ebf76",
                             Name = "Librarian",
                             NormalizedName = "LIBRARIAN"
                         },
                         new
                         {
-                            Id = "e7bf9ecd-7b31-4423-b64f-a24a503ac74b",
+                            Id = "54b179a1-f50f-4610-b519-9364ef8d0328",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });

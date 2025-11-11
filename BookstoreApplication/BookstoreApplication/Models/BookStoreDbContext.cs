@@ -94,14 +94,14 @@ namespace BookstoreApplication.Models
                 .OnDelete(DeleteBehavior.Restrict);
             //V3
 
-            // --- Authors ---
-            modelBuilder.Entity<Author>().HasData(
-                new Author { Id = 1, FullName = "Ivo Andrić", Biography = "Dobitnik Nobelove nagrade za književnost.", DateOfBirth = DateTime.SpecifyKind(new DateTime(1892, 10, 9), DateTimeKind.Utc) },
-                new Author { Id = 2, FullName = "Mesa Selimović", Biography = "Autor romana Derviš i smrt.", DateOfBirth = DateTime.SpecifyKind(new DateTime(1910, 4, 26), DateTimeKind.Utc) },
-                new Author { Id = 3, FullName = "Danilo Kiš", Biography = "Poznat po romanu Bašta, pepeo.", DateOfBirth = DateTime.SpecifyKind(new DateTime(1935, 2, 22), DateTimeKind.Utc) },
-                new Author { Id = 4, FullName = "Branko Ćopić", Biography = "Pisac za decu i odrasle, humorista.", DateOfBirth = DateTime.SpecifyKind(new DateTime(1915, 1, 1), DateTimeKind.Utc) },
-                new Author { Id = 5, FullName = "Dobrica Ćosić", Biography = "Prozaista i političar.", DateOfBirth = DateTime.SpecifyKind(new DateTime(1921, 12, 29), DateTimeKind.Utc) }
-            );
+            //// --- Authors ---
+            //modelBuilder.Entity<Author>().HasData(
+            //    new Author { Id = 1, FullName = "Ivo Andrić", Biography = "Dobitnik Nobelove nagrade za književnost.", DateOfBirth = DateTime.SpecifyKind(new DateTime(1892, 10, 9), DateTimeKind.Utc) },
+            //    new Author { Id = 2, FullName = "Mesa Selimović", Biography = "Autor romana Derviš i smrt.", DateOfBirth = DateTime.SpecifyKind(new DateTime(1910, 4, 26), DateTimeKind.Utc) },
+            //    new Author { Id = 3, FullName = "Danilo Kiš", Biography = "Poznat po romanu Bašta, pepeo.", DateOfBirth = DateTime.SpecifyKind(new DateTime(1935, 2, 22), DateTimeKind.Utc) },
+            //    new Author { Id = 4, FullName = "Branko Ćopić", Biography = "Pisac za decu i odrasle, humorista.", DateOfBirth = DateTime.SpecifyKind(new DateTime(1915, 1, 1), DateTimeKind.Utc) },
+            //    new Author { Id = 5, FullName = "Dobrica Ćosić", Biography = "Prozaista i političar.", DateOfBirth = DateTime.SpecifyKind(new DateTime(1921, 12, 29), DateTimeKind.Utc) }
+            //);
 
             // --- Publishers ---
             modelBuilder.Entity<Publisher>().HasData(
@@ -119,20 +119,20 @@ namespace BookstoreApplication.Models
             );
 
             // --- Books ---
-            modelBuilder.Entity<Book>().HasData(
-                new Book { Id = 1, Title = "Na Drini ćuprija", PageCount = 350, PublishedDate = DateTime.SpecifyKind(new DateTime(1945, 1, 1), DateTimeKind.Utc), ISBN = "978000000001", AuthorId = 1, PublisherId = 1 },
-                new Book { Id = 2, Title = "Travnička hronika", PageCount = 320, PublishedDate = DateTime.SpecifyKind(new DateTime(1945, 1, 1), DateTimeKind.Utc), ISBN = "978000000002", AuthorId = 1, PublisherId = 2 },
-                new Book { Id = 3, Title = "Derviš i smrt", PageCount = 400, PublishedDate = DateTime.SpecifyKind(new DateTime(1966, 1, 1), DateTimeKind.Utc), ISBN = "978000000003", AuthorId = 2, PublisherId = 1 },
-                new Book { Id = 4, Title = "Tvrđava", PageCount = 380, PublishedDate = DateTime.SpecifyKind(new DateTime(1970, 1, 1), DateTimeKind.Utc), ISBN = "978000000004", AuthorId = 2, PublisherId = 3 },
-                new Book { Id = 5, Title = "Bašta, pepeo", PageCount = 250, PublishedDate = DateTime.SpecifyKind(new DateTime(1965, 1, 1), DateTimeKind.Utc), ISBN = "978000000005", AuthorId = 3, PublisherId = 2 },
-                new Book { Id = 6, Title = "Rani jadi", PageCount = 200, PublishedDate = DateTime.SpecifyKind(new DateTime(1969, 1, 1), DateTimeKind.Utc), ISBN = "978000000006", AuthorId = 3, PublisherId = 1 },
-                new Book { Id = 7, Title = "Peščanik", PageCount = 300, PublishedDate = DateTime.SpecifyKind(new DateTime(1972, 1, 1), DateTimeKind.Utc), ISBN = "978000000007", AuthorId = 3, PublisherId = 2 },
-                new Book { Id = 8, Title = "Ježeva kućica", PageCount = 50, PublishedDate = DateTime.SpecifyKind(new DateTime(1949, 1, 1), DateTimeKind.Utc), ISBN = "978000000008", AuthorId = 4, PublisherId = 3 },
-                new Book { Id = 9, Title = "Doživljaji mačka Toše", PageCount = 60, PublishedDate = DateTime.SpecifyKind(new DateTime(1955, 1, 1), DateTimeKind.Utc), ISBN = "978000000009", AuthorId = 4, PublisherId = 1 },
-                new Book { Id = 10, Title = "Koreni", PageCount = 420, PublishedDate = DateTime.SpecifyKind(new DateTime(1954, 1, 1), DateTimeKind.Utc), ISBN = "978000000010", AuthorId = 5, PublisherId = 2 },
-                new Book { Id = 11, Title = "Deobe", PageCount = 500, PublishedDate = DateTime.SpecifyKind(new DateTime(1961, 1, 1), DateTimeKind.Utc), ISBN = "978000000011", AuthorId = 5, PublisherId = 1 },
-                new Book { Id = 12, Title = "Vreme smrti", PageCount = 600, PublishedDate = DateTime.SpecifyKind(new DateTime(1972, 1, 1), DateTimeKind.Utc), ISBN = "978000000012", AuthorId = 5, PublisherId = 3 }
-            );
+            //modelBuilder.Entity<Book>().HasData(
+            //    new Book { Id = 1, Title = "Na Drini ćuprija", PageCount = 350, PublishedDate = DateTime.SpecifyKind(new DateTime(1945, 1, 1), DateTimeKind.Utc), ISBN = "978000000001", AuthorId = 1, PublisherId = 1 },
+            //    new Book { Id = 2, Title = "Travnička hronika", PageCount = 320, PublishedDate = DateTime.SpecifyKind(new DateTime(1945, 1, 1), DateTimeKind.Utc), ISBN = "978000000002", AuthorId = 1, PublisherId = 2 },
+            //    new Book { Id = 3, Title = "Derviš i smrt", PageCount = 400, PublishedDate = DateTime.SpecifyKind(new DateTime(1966, 1, 1), DateTimeKind.Utc), ISBN = "978000000003", AuthorId = 2, PublisherId = 1 },
+            //    new Book { Id = 4, Title = "Tvrđava", PageCount = 380, PublishedDate = DateTime.SpecifyKind(new DateTime(1970, 1, 1), DateTimeKind.Utc), ISBN = "978000000004", AuthorId = 2, PublisherId = 3 },
+            //    new Book { Id = 5, Title = "Bašta, pepeo", PageCount = 250, PublishedDate = DateTime.SpecifyKind(new DateTime(1965, 1, 1), DateTimeKind.Utc), ISBN = "978000000005", AuthorId = 3, PublisherId = 2 },
+            //    new Book { Id = 6, Title = "Rani jadi", PageCount = 200, PublishedDate = DateTime.SpecifyKind(new DateTime(1969, 1, 1), DateTimeKind.Utc), ISBN = "978000000006", AuthorId = 3, PublisherId = 1 },
+            //    new Book { Id = 7, Title = "Peščanik", PageCount = 300, PublishedDate = DateTime.SpecifyKind(new DateTime(1972, 1, 1), DateTimeKind.Utc), ISBN = "978000000007", AuthorId = 3, PublisherId = 2 },
+            //    new Book { Id = 8, Title = "Ježeva kućica", PageCount = 50, PublishedDate = DateTime.SpecifyKind(new DateTime(1949, 1, 1), DateTimeKind.Utc), ISBN = "978000000008", AuthorId = 4, PublisherId = 3 },
+            //    new Book { Id = 9, Title = "Doživljaji mačka Toše", PageCount = 60, PublishedDate = DateTime.SpecifyKind(new DateTime(1955, 1, 1), DateTimeKind.Utc), ISBN = "978000000009", AuthorId = 4, PublisherId = 1 },
+            //    new Book { Id = 10, Title = "Koreni", PageCount = 420, PublishedDate = DateTime.SpecifyKind(new DateTime(1954, 1, 1), DateTimeKind.Utc), ISBN = "978000000010", AuthorId = 5, PublisherId = 2 },
+            //    new Book { Id = 11, Title = "Deobe", PageCount = 500, PublishedDate = DateTime.SpecifyKind(new DateTime(1961, 1, 1), DateTimeKind.Utc), ISBN = "978000000011", AuthorId = 5, PublisherId = 1 },
+            //    new Book { Id = 12, Title = "Vreme smrti", PageCount = 600, PublishedDate = DateTime.SpecifyKind(new DateTime(1972, 1, 1), DateTimeKind.Utc), ISBN = "978000000012", AuthorId = 5, PublisherId = 3 }
+            //);
 
             // --- AuthorAward ---
             modelBuilder.Entity<AuthorAward>().HasData(
@@ -152,7 +152,24 @@ namespace BookstoreApplication.Models
                 new AuthorAward { Id = 14, AuthorId = 2, AwardId = 4, AwardedDate = DateTime.SpecifyKind(new DateTime(1975, 1, 1), DateTimeKind.Utc) },
                 new AuthorAward { Id = 15, AuthorId = 1, AwardId = 4, AwardedDate = DateTime.SpecifyKind(new DateTime(1978, 1, 1), DateTimeKind.Utc) }
             );
-            
+            // --- Indexes for performance ---
+            modelBuilder.Entity<Author>()
+                .HasIndex(a => a.FullName)                 // search/filter by author name
+                .HasDatabaseName("IX_Author_FullName");
+
+            modelBuilder.Entity<Book>()
+                .HasIndex(b => b.Title)                    // search/filter by book title
+                .HasDatabaseName("IX_Book_Title");
+
+            modelBuilder.Entity<Book>()
+                .HasIndex(b => b.AuthorId)                 // improve joins on Author
+                .HasDatabaseName("IX_Book_AuthorId");
+
+            modelBuilder.Entity<AuthorAward>()
+                .HasIndex(aa => new { aa.AuthorId, aa.AwardId })  // avoid duplicates
+                .HasDatabaseName("IX_AuthorAward_Author_Award");
+
+
         }
     }
 }
