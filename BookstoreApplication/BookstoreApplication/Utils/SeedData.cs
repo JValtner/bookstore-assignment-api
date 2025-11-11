@@ -22,7 +22,7 @@ namespace BookstoreApplication.Utils
                 }
             }
 
-            // Create a default Editor user
+            // --- Editor User ---
             string editorEmail = "editor@bookstore.com";
             string editorUserName = "Editor123";
 
@@ -38,11 +38,7 @@ namespace BookstoreApplication.Utils
                 };
 
                 var result = await userManager.CreateAsync(editorUser, "Editor@123!");
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(editorUser, "Editor");
-                }
-                else
+                if (!result.Succeeded)
                 {
                     Console.WriteLine("Failed to create Editor user:");
                     foreach (var error in result.Errors)
@@ -50,7 +46,13 @@ namespace BookstoreApplication.Utils
                 }
             }
 
-            // Create a default Librarian user
+            // Ensure Editor role is applied
+            if (!await userManager.IsInRoleAsync(editorUser, "Editor"))
+            {
+                await userManager.AddToRoleAsync(editorUser, "Editor");
+            }
+
+            // --- Librarian User ---
             string librarianEmail = "librarian@bookstore.com";
             string librarianUserName = "Librarian123";
 
@@ -66,16 +68,18 @@ namespace BookstoreApplication.Utils
                 };
 
                 var result = await userManager.CreateAsync(librarianUser, "Librarian@123!");
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(librarianUser, "Librarian");
-                }
-                else
+                if (!result.Succeeded)
                 {
                     Console.WriteLine("Failed to create Librarian user:");
                     foreach (var error in result.Errors)
                         Console.WriteLine($" - {error.Description}");
                 }
+            }
+
+            // Ensure Librarian role is applied
+            if (!await userManager.IsInRoleAsync(librarianUser, "Librarian"))
+            {
+                await userManager.AddToRoleAsync(librarianUser, "Librarian");
             }
         }
     }

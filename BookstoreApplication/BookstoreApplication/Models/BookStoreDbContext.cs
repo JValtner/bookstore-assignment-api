@@ -18,6 +18,7 @@ namespace BookstoreApplication.Models
         public DbSet<LocalIssue> LocalIssues { get; set; }
         public DbSet<ComicVineImage> ComicVineImages { get; set; }
         public DbSet<ComicVineVolume> ComicVineVolumes { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -9,5 +9,6 @@
         public string AuthorName { get; set; }
         public string PublisherName { get; set; }
         public int BookAge { get; set; }
+        public double AverageRating { get; set; }
     }
 }

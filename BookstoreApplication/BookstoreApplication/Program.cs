@@ -2,12 +2,14 @@
 using System.Text;
 using BookstoreApplication.Models;
 using BookstoreApplication.Models.IRepository;
+using BookstoreApplication.Repositories;
 using BookstoreApplication.Repository;
 using BookstoreApplication.Repository.ExternalComics;
 using BookstoreApplication.Repository.NewFolder;
 using BookstoreApplication.Services;
 using BookstoreApplication.Services.IService;
 using BookstoreApplication.Settings;
+using BookstoreApplication.UoW;
 using BookstoreApplication.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -110,6 +112,9 @@ builder.Services.AddScoped<IPublishersService, PublishersService>();
 builder.Services.AddScoped<IIssuesService, IssuesService>();
 builder.Services.AddScoped<IVolumesService, VolumesService>();
 builder.Services.AddScoped<IComicsRepository, ComicsRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Automapper
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());

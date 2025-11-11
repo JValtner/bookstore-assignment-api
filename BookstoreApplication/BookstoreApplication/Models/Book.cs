@@ -13,5 +13,6 @@
 
         public int PublisherId { get; set; }
         public Publisher? Publisher { get; set; }
+        public double AverageRating { get; set;  } = 0.0;
     }
 }

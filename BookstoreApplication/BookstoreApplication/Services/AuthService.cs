@@ -89,7 +89,7 @@ namespace BookstoreApplication.Services
             };
             // Roles
             var roles = await _userManager.GetRolesAsync(user);
-            claims.AddRange(roles.Select(role => new Claim("role", role)));
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             // Konfiguracija za generisanje tokena
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
