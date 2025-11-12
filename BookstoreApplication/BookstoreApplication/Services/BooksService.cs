@@ -195,18 +195,25 @@ namespace BookstoreApplication.Services
             _logger.LogDebug("Checked existence for book ID {Id}: {Exists}", id, exists);
             return exists;
         }
-        public async Task<PaginatedList<BookDTO>> GetAllFilteredAndSortedAndPaged(BookFilter filter, int sortType, int page,int pageSize)
+       public async Task<PaginatedList<BookDTO>> GetAllFilteredAndSortedAndPaged(
+            BookFilter filter, int sortType, int page, int pageSize)
+        {
+            var booksPage = await _booksRepository.GetAllFilteredAndSortedAndPaged(filter, sortType, page, pageSize);
+
+            var dtoItems = booksPage.Items.Select(b => new BookDTO
             {
-                
-                PaginatedList<Book> books = await _booksRepository.GetAllFilteredAndSortedAndPaged(filter, sortType, page, pageSize);
+                Id = b.Id,
+                Title = b.Title,
+                PublishedDate = b.PublishedDate,
+                ISBN = b.ISBN,
+                AuthorName = b.Author?.FullName ?? string.Empty,
+                PublisherName = b.Publisher?.Name ?? string.Empty,
+                AverageRating = b.AverageRating,
+                BookAge = DateTime.UtcNow.Year - b.PublishedDate.Year
+            }).ToList();
 
-                // Map items to DTOs
-                var dtoItems = books.Items.Select(_mapper.Map<BookDTO>).ToList();
-
-                PaginatedList<BookDTO> dtos = new PaginatedList<BookDTO>(dtoItems,books.Count, books.PageIndex, pageSize);
-
-                return dtos;
-            }
+            return new PaginatedList<BookDTO>(dtoItems, booksPage.Count, booksPage.PageIndex, pageSize);
+        }
 
         public async Task<List<SortTypeOption>> GetSortTypesAsync()  //dobavlja vrste sortiranja
         {

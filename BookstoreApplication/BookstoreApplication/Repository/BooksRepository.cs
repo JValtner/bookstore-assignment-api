@@ -85,20 +85,29 @@ namespace BookstoreApplication.Repository
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<PaginatedList<Book>> GetAllFilteredAndSortedAndPaged(BookFilter filter, int sortType, int page, int PageSize)
+        public async Task<PaginatedList<Book>> GetAllFilteredAndSortedAndPaged(
+    BookFilter filter, int sortType, int page, int pageSize)
         {
-            IQueryable<Book> books = _context.Books
-                .Include(b => b.Author)
-                .Include(b => b.Publisher);
+            var query = _context.Books.AsNoTracking();
 
-            books = FilterBooks(books, filter);
-            books = SortBooks(books, sortType);
+            // Apply filters
+            query = FilterBooks(query, filter);
 
-            int pageIndex = page - 1;
-            var count = await books.CountAsync();
-            var items = await books.Skip(pageIndex * PageSize).Take(PageSize).ToListAsync();
-            PaginatedList<Book> result = new PaginatedList<Book>(items, count, pageIndex, PageSize);
-            return result;
+            // Apply sort with stable tiebreaker
+            query = SortBooks(query, sortType).OrderBy(b => b.Id);
+
+            // Count AFTER filters
+            var totalCount = await query.CountAsync();
+
+            // Page and include only what you need for mapping
+            var items = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Include(b => b.Author)     // needed for AuthorName
+                .Include(b => b.Publisher)  // needed for PublisherName
+                .ToListAsync();
+
+            return new PaginatedList<Book>(items, totalCount, page, pageSize);
         }
         private static IQueryable<Book> SortBooks(IQueryable<Book> books, int sortType)
         {
